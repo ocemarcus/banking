@@ -6,7 +6,7 @@ export class UsersDto {
     fullName: string
 
     @IsNumberString()
-    phone: string
+    cellPhone: string
 
     @IsNumberString()
     document: string

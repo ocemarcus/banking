@@ -15,6 +15,13 @@
       "when": 1771624126798,
       "tag": "0001_thick_exiles",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771629754860,
+      "tag": "0002_furry_venus",
+      "breakpoints": true
     }
   ]
 }

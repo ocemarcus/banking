@@ -6,7 +6,7 @@ export const usersSchema = pgTable("users", {
 	cellPhone: varchar().notNull(),
 	document: varchar().notNull(),
 	email: varchar().notNull(),
-	password: varchar().notNull(),
+	password: varchar('password').notNull(),
 
 	createdAt: timestamp({
 		withTimezone: true,

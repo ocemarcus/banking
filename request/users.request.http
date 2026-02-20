@@ -6,7 +6,7 @@ Content-Type: application/json
     "fullName": "Jose Marcus",
     "password": "123456",
     "document": "11232122123",
-    "phone":"3198999987",
+    "cellPhone":"3198999987",
     "email":"test@gmail.com"
 }
 ###
