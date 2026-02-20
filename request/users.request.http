@@ -1,0 +1,21 @@
+POST /api/users
+Host: localhost:5000
+Content-Type: application/json
+
+{
+    "fullName": "Jose Marcus",
+    "password": "123456",
+    "document": "11232122123",
+    "phone":"3198999987",
+    "email":"test@gmail.com"
+}
+###
+POST /api/account
+Host: localhost:5000
+Content-Type: application/json
+
+{
+    "userId": "",
+    "document": "",
+    "accountType": "pf"
+}

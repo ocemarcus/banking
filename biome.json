@@ -1,0 +1,17 @@
+{
+  "linter": {
+    "rules": {
+      "correctness": {
+        "noUnusedImports": "off"
+      },
+      "style": {
+        "useImportType": "off"
+      }
+    }
+  },
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  }
+}
