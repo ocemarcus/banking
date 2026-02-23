@@ -100,7 +100,7 @@ export const swaggerError = {
 	),
 };
 export const SwaggerError400 = {
-	status: HttpStatus.BAD_GATEWAY,
+	status: HttpStatus.BAD_REQUEST,
 	description: "Error na requisição",
 	content: {
 		"application/json": {
@@ -110,7 +110,7 @@ export const SwaggerError400 = {
 					statusCode: createSwaggerProperties(
 						swaggerType.number,
 						"Status da requisição",
-						401,
+						HttpStatus.BAD_REQUEST,
 					),
 					error: createSwaggerProperties(
 						swaggerType.string,
@@ -138,7 +138,7 @@ export const SwaggerError401 = {
 					statusCode: createSwaggerProperties(
 						swaggerType.number,
 						"Status da requisião",
-						401,
+						HttpStatus.UNAUTHORIZED,
 					),
 					error: createSwaggerProperties(
 						swaggerType.string,

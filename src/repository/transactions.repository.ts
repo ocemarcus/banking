@@ -7,8 +7,9 @@ import {
 	transactionsSchema,
 } from "@db/schema/transactions.schema";
 import { Injectable } from "@nestjs/common";
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
+import moment from "moment";
 
 export type CreateTransactionsEntity = typeof transactionsSchema.$inferInsert;
 export type TransactionsOwnerEntity =
@@ -275,6 +276,14 @@ export class TransactionsRepository {
 
 	static search(params: TransactionsDto) {
 		const where: any[] = []
+
+		where.push(
+			lte(
+				transactionsSchema.createdAt,
+				moment(params.endDate).endOf('day').format()
+			),
+			gte(transactionsSchema.createdAt, moment(params.startDate).startOf('day').format()),
+		)
 
 		if (params.typeTransaction) {
 			where.push(

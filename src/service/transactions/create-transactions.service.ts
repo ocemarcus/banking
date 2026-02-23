@@ -52,7 +52,7 @@ export class CreateTransactionsService {
 
         await this.transactionsRepository.save({transaction, account: {
             accountId: account.id,  
-            version: account.version,
+            version: +account.version,
         }})
 
 	}
