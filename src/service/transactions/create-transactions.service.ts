@@ -13,9 +13,7 @@ export class CreateTransactionsService {
 
 	public async execute(data: CreateTransactionsDto) {
 
-		const account = await this.accountRepository.findByNumber(
-			data.accountNumber,
-		);
+        const account = await this.accountRepository.findByAccountDetail({ accountNumber: data.accountNumber });
 		if (!account?.id) {
             throw new HttpException('Conta não encontrada', HttpStatus.BAD_REQUEST)
 		}

@@ -14,17 +14,18 @@ export class RollbackTransactionsService {
 
         const transaction = await this.transactionsRepository.findRollbackDetail(transactionId, userId)
 
-		const validateTransaction = /Out/.test(transaction.typeTransaction)
-		if(validateTransaction) {
-			throw new HttpException('Transação inválida', HttpStatus.BAD_REQUEST)
+		if (!transaction?.typeTransaction) {
+			throw new HttpException('Transação não encontrada', HttpStatus.BAD_REQUEST)
 		}
 
-        if(!transaction?.amount) {
-			throw new HttpException('Transação inválida', HttpStatus.BAD_REQUEST)
-        }
+		const validateTransaction = /Out/.test(transaction.typeTransaction)
+		if(validateTransaction) {
+			throw new HttpException('Tipo de transação inválida para rollback', HttpStatus.BAD_REQUEST)
+		}
+
 
 		if(transaction.statusTransaction !== 'success') {
-			throw new HttpException('Staus da transação inválida', HttpStatus.BAD_REQUEST)
+			throw new HttpException('Staus da transação inválido', HttpStatus.BAD_REQUEST)
 		}
 
         const rollback = {
@@ -37,7 +38,7 @@ export class RollbackTransactionsService {
 
         await this.transactionsRepository.rollback(rollback)
 
-		const account = await this.accountRepository.findByNumber(transaction.owner.bankAccount) 
+		const account = await this.accountRepository.findByAccountDetail({ accountNumber: transaction.owner.bankAccount }) 
 		if(!account?.id) {
 			//Conta sem vículo com banking
 			return 
@@ -61,9 +62,10 @@ export class RollbackTransactionsService {
             accountId: account.id,
         } as any
 
-		await this.transactionsRepository.save({transaction: newTransaction, account: {
-			 version: account.version,
-			 accountId: account.id,
+		await this.transactionsRepository.save({
+			transaction: newTransaction, account: {
+				accountId: account.id,
+				version: +account.version,
 		}})
 
 

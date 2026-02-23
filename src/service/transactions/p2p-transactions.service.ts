@@ -19,6 +19,7 @@ export class P2PTransactionsService {
                 id: data.accountId,
              }
 		);
+
 		if (!account?.id) {
             throw new HttpException('Conta não encontrada', HttpStatus.BAD_REQUEST)
 		}
@@ -70,7 +71,7 @@ export class P2PTransactionsService {
                 
 				accountId: accountFrom.id,
 				previousBalance: accountFrom.balance,
-				typeTransaction: "transferInternalIn",
+                typeTransaction: "transferInternalIn",
 
 			},
 		]as any
