@@ -43,6 +43,10 @@ export class P2PTransactionsService {
 
         const accountFrom = await this.accountRepository.findByAccountDetail({id: data.accountFromId})
 
+        if (!accountFrom?.id) {
+            throw new HttpException('Conta não encontrada', HttpStatus.BAD_REQUEST)
+        }
+
         const creditOwner: TransactionsOwnerEntity = {
             bankName: 'AC',
             id: await uuidV7(),
