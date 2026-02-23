@@ -1,0 +1,25 @@
+###
+POST /api/transactions
+Host: localhost:5000
+Content-Type: application/json
+
+{
+
+   "amount": 4000,
+   "typeTransaction": "pixIn",
+   "accountNumber": "11111111111",
+
+   "owner": {
+        "fullName":"Jose",
+        "document": "112432232",
+        "cellPhone": "31 98665433",
+        "bankName": "Itaú",
+        "bankAccount": "112444 4344"
+   }
+}
+###
+GET /api/transactions/019c889b-0335-712e-8463-7272689d5f7e/rollback
+Host: localhost:5000
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMTljN2Q2NC1hMDNmLTc3ZWYtOTA4NC05ODQ4MjJmZmVjMzkiLCJ1c2VybmFtZSI6Ikpvc2UgTWFyY3VzIiwiaWF0IjoxNzcxODE5MjQyLCJleHAiOjE3NzE5MDU2NDJ9.voIIkOxplReLIJv4EqvzFsMqCdTUibJdjvmqqVX_Iug
+

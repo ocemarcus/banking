@@ -2,6 +2,8 @@
 
 export class AccountEntity {
 
+   id: string
+
    userId: string
    
    accountType: string

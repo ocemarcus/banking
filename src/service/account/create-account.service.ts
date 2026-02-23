@@ -13,8 +13,12 @@ export class CreateAccountService {
 		const id = await uuidV7();
 
 		const account = plainToInstance(AccountEntity, {
-			...data,
 			id,
+			balance: 0,
+			version: 1,
+			userId: data.userId,
+			accountType: data.accountType,
+			accountNumber: data.document,
 		});
 		await this.accountRepository.save(account);
 	}

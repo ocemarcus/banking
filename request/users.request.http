@@ -5,17 +5,29 @@ Content-Type: application/json
 {
     "fullName": "Jose Marcus",
     "password": "123456",
-    "document": "11232122123",
+    "document": "75839773042",
     "cellPhone":"3198999987",
     "email":"test@gmail.com"
 }
 ###
+###
+POST /api/auth
+Host: localhost:5000
+Content-Type: application/json
+
+{
+    "email": "test@gmail.com",
+    "password": "123456"
+}
+
+###
+
 POST /api/account
 Host: localhost:5000
 Content-Type: application/json
 
 {
     "userId": "",
-    "document": "",
+    "document": "75839773042",
     "accountType": "pf"
 }

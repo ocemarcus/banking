@@ -22,14 +22,15 @@
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-        "@db/*": ["./src/db/*"],
-        "@repository/*": ["./src/repository/*"],
-        "@controller/*": ["./src/controller/*"],
-        "@service/*": ["./src/service/*"],
-        "@entity/*": ["./src/entity/*"],
-        "@module/*": ["./src/module/*"],
-        "@validate/*": ["./src/validate/*"],
-        "@share/*": ["src/share/*"],
-    }
+					"@db/*": ["./src/db/*"],
+					"@repository/*": ["./src/repository/*"],
+					"@controller/*": ["./src/controller/*"],
+					"@service/*": ["./src/service/*"],
+					"@entity/*": ["./src/entity/*"],
+					"@module/*": ["./src/module/*"],
+					"@validate/*": ["./src/validate/*"],
+					"@share/*": ["./src/share/*"],
+					"@auth/*": ["./src/auth/*"]
+				}
   }
 }

@@ -1,4 +1,4 @@
-import { IsEnum, IsUUID } from "class-validator";
+import { IsEnum, IsNumberString, IsUUID } from "class-validator";
 
 export class CreateAccountDto {
 
@@ -7,5 +7,8 @@ export class CreateAccountDto {
 
     @IsUUID()
     userId: string
+
+    @IsNumberString()
+    document: string
 
 }
