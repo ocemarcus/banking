@@ -24,7 +24,9 @@ export const TransactionsSwaggerProperties = {
         type: swaggerType.object,
         properties: TransactionsOwnerProperties
         
-    }
+    },
+    createdAt: createSwaggerProperties(swaggerType.string, 'Data de criação', '2026-02-23 13:02:33.79405+00'),
+    updatedAt: createSwaggerProperties(swaggerType.string, 'Data de atualização', '2026-02-23 13:02:33.79405+00'),
 }
 
 export const TransactionsSwaggerResponse = SwaggerHttpResponse(

@@ -6,15 +6,16 @@ import {
 	Validate,
 	ValidationArguments,
 	ValidatorConstraint,
-	ValidatorConstraintInterface,
+	ValidatorConstraintInterface
 } from "class-validator";
 import moment from "moment";
 
-@ValidatorConstraint({ name: "pagination", async: false })
+@ValidatorConstraint({ name: "pagination", async: true })
 export class Pagination implements ValidatorConstraintInterface {
 	validate(page: string, args: any) {
 		page = ((+page - 1) * +args.object["limit"]).toString();
-		args.object["page"] = page;
+		args.object["page"] = +page;
+
 		return true;
 	}
 
@@ -23,6 +24,7 @@ export class Pagination implements ValidatorConstraintInterface {
 	}
 }
 
+
 export class PaginationBase {
 	@IsNumberString()
 	@ApiProperty({
@@ -30,14 +32,14 @@ export class PaginationBase {
 		type: 'number',
 		description: 'Limite de paginas'
 	})
-	limit = "10";
+	limit = 10;
 
 	@Validate(Pagination)
 	@ApiProperty({
 		example: '1',
 		description: 'Página'
 	})
-	page: string;
+	page: number;
 
 	@IsOptional()
 	@IsISO8601()

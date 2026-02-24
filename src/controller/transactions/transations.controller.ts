@@ -1,10 +1,10 @@
 import { AuthGuard } from "@auth/auth.guard";
 import { Controller, Get, Query, Request, UseGuards } from "@nestjs/common";
 import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiResponse,
-    ApiTags,
+	ApiBearerAuth,
+	ApiOperation,
+	ApiResponse,
+	ApiTags,
 } from "@nestjs/swagger";
 import { TransactionsService } from "@service/transactions/transactions.serivce";
 import { SwaggerError400, SwaggerError401 } from "@share/swagger";
@@ -26,7 +26,10 @@ export class TransactionsController {
 	@ApiResponse(TransactionsSwaggerResponse)
 	@ApiResponse(SwaggerError400)
 	@ApiResponse(SwaggerError401)
-	async create(@Query() params: TransactionsDto, @Request() req: any) {
+	async create(
+		@Query() params: TransactionsDto,
+		@Request() req: any,
+	) {
 		return this.transactionsService.execute(params, req.user.sub);
 	}
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNumberString, IsUUID } from "class-validator";
+import { IsCpfCnpj } from "@validator/cpf-cnpj.validator";
+import { IsEnum, IsNumberString } from "class-validator";
 
 export class CreateAccountDto {
 
@@ -11,17 +12,11 @@ export class CreateAccountDto {
     })
     accountType: string
 
-    @IsUUID()
-    @ApiProperty({
-        example: '019c8a95-43e4-7797-88e6-67f00573ea54',
-        description: 'Id do usuário'
-    })
-    userId: string
-
     @IsNumberString()
+    @IsCpfCnpj()
     @ApiProperty({
-        example: '11',
-        description: 'Número da conta. Informar PCF/CNPJ 16245987067'
+        example: '16245987067',
+        description: 'Número da conta. Informar PCF/CNPJ'
     })
     document: string
 

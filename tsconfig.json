@@ -30,7 +30,8 @@
 					"@module/*": ["./src/module/*"],
 					"@validate/*": ["./src/validate/*"],
 					"@share/*": ["./src/share/*"],
-					"@auth/*": ["./src/auth/*"]
+					"@auth/*": ["./src/auth/*"],
+					"@validator/*": ["./src/validator/*"]
 				}
   }
 }

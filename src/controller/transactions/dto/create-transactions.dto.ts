@@ -57,7 +57,7 @@ export class CreateTransactionsDto {
 	@IsNumberString()
 	@ApiProperty({
 		description: 'Número da conta a ser enviada',
-		example: 'uuidAccount'
+		example: '16245987067'
 	})
 	accountNumber: string
 

@@ -20,13 +20,12 @@ export class TransactionsRepository {
 	constructor(@InjectDb() private readonly db: DB) {}
 
 	async find(params: TransactionsDto, userId: string) {
-
 		const debit = alias(transactionsOwnerSchema, "debit");
 		const credit = alias(transactionsOwnerSchema, "credit");
 
-		const where = TransactionsRepository.search(params)
+		const where = TransactionsRepository.search(params);
 
-		where.push(eq(accountSchema.userId, userId))
+		where.push(eq(accountSchema.userId, userId));
 
 		const [data, total] = await Promise.all([
 			this.db
@@ -62,34 +61,27 @@ export class TransactionsRepository {
 					},
 				})
 				.from(transactionsSchema)
-				.leftJoin(debit, eq(debit.id, transactionsSchema.debitId))
-				.leftJoin(credit, eq(credit.id, transactionsSchema.creditId))
 				.innerJoin(
 					accountSchema,
 					eq(accountSchema.id, transactionsSchema.accountId),
 				)
-				.where(
-					and(...where)
-				)
+				.leftJoin(debit, eq(debit.id, transactionsSchema.debitId))
+				.leftJoin(credit, eq(credit.id, transactionsSchema.creditId))
+				.where(and(...where))
 				.limit(+params.limit)
 				.offset(+params.page)
-				.orderBy(desc(transactionsSchema.id))
-			,
+				.orderBy(desc(transactionsSchema.id)),
 
 			this.db
 				.select({ total: count(transactionsSchema.id) })
 				.from(transactionsSchema)
-				.leftJoin(debit, eq(debit.id, transactionsSchema.debitId))
-				.leftJoin(credit, eq(credit.id, transactionsSchema.creditId))
 				.innerJoin(
 					accountSchema,
 					eq(accountSchema.id, transactionsSchema.accountId),
 				)
-				.where(
-					and(
-						...where
-					)
-				),
+				.leftJoin(debit, eq(debit.id, transactionsSchema.debitId))
+				.leftJoin(credit, eq(credit.id, transactionsSchema.creditId))
+				.where(and(...where)),
 		]);
 
 		return { data, total: total[0].total };
@@ -275,28 +267,28 @@ export class TransactionsRepository {
 	}
 
 	static search(params: TransactionsDto) {
-		const where: any[] = []
+		const where: any[] = [];
 
 		where.push(
 			lte(
 				transactionsSchema.createdAt,
-				moment(params.endDate).endOf('day').format()
+				moment(params.endDate).endOf("day").format(),
 			),
-			gte(transactionsSchema.createdAt, moment(params.startDate).startOf('day').format()),
-		)
+			gte(
+				transactionsSchema.createdAt,
+				moment(params.startDate).startOf("day").format(),
+			),
+		);
 
 		if (params.typeTransaction) {
 			where.push(
-				eq(transactionsSchema.typeTransaction, params.typeTransaction as any)
-			)
+				eq(transactionsSchema.typeTransaction, params.typeTransaction as any),
+			);
 		}
 		if (params.accountNumber) {
-			where.push(
-				eq(accountSchema.accountNumber, params.accountNumber)
-			)
+			where.push(eq(accountSchema.accountNumber, params.accountNumber));
 		}
 
-
-		return where
+		return where;
 	}
 }

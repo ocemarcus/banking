@@ -9,17 +9,21 @@ import { plainToInstance } from "class-transformer";
 export class CreateAccountService {
 	constructor(private readonly accountRepository: AccountRepository) {}
 
-	public async execute(data: CreateAccountDto) {
+	public async execute(data: CreateAccountDto, userId: string) {
 		const id = await uuidV7();
 
 		const account = plainToInstance(AccountEntity, {
 			id,
+			userId,
 			balance: 0,
 			version: 1,
-			userId: data.userId,
-			accountType: data.accountType,
 			accountNumber: data.document,
+			accountType: data.accountType,
 		});
+
+
 		await this.accountRepository.save(account);
+
+		console.log('xxxxxfddd')
 	}
 }
