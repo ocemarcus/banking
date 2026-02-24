@@ -1,5 +1,6 @@
 import { DbModule } from "@db/db.module";
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { LoggerMiddleware } from "./middleware/logger.middleware";
 import { AccountModule } from "./modules/account.module";
 import { AuthModule } from "./modules/auth.module";
 import { TransactionsModule } from "./modules/transactions.module";
@@ -12,9 +13,12 @@ import { UsersModule } from "./modules/users.module";
 		AuthModule,
 		AccountModule,
 		TransactionsModule,
-
 	],
 	controllers: [],
 	providers: [],
 })
-export class AppModule {}
+export class AppModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(LoggerMiddleware).forRoutes("*"); // Apply to all routes
+	}
+}
