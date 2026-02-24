@@ -1,16 +1,16 @@
 import {
-	ValidatorConstraint,
-	ValidatorConstraintInterface,
+	registerDecorator,
 	ValidationArguments,
 	ValidationOptions,
-	registerDecorator,
+	ValidatorConstraint,
+	ValidatorConstraintInterface,
 } from "class-validator";
-import { cpf, cnpj } from "cpf-cnpj-validator"; //
+import { cnpj, cpf } from "cpf-cnpj-validator";
 
 @ValidatorConstraint({ async: false })
 export class CpfCnpjValidator implements ValidatorConstraintInterface {
 	validate(documentValue: string, args: ValidationArguments) {
-		const cleanDocument = documentValue.replace(/\D/g, ""); //
+		const cleanDocument = documentValue.replace(/\D/g, ""); 
 
 		if (cleanDocument.length === 11) {
 			return cpf.isValid(cleanDocument);
@@ -26,7 +26,7 @@ export class CpfCnpjValidator implements ValidatorConstraintInterface {
 }
 
 export function IsCpfCnpj(validationOptions?: ValidationOptions) {
-	return function (object: Object, propertyName: string) {
+	return (object: Object, propertyName: string) => {
 		registerDecorator({
 			target: object.constructor,
 			propertyName: propertyName,

@@ -10,7 +10,7 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle("Banking AG")
+    .setTitle("Banking AC")
     .setDescription("Documentação das api")
     .setVersion("1.0")
     .addBearerAuth()
