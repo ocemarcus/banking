@@ -7,6 +7,6 @@ export class AccountsService {
 	constructor(private readonly accountRepository: AccountRepository) {}
 
 	public async execute(params: AccountsDto, userId: string) {
-       return await this.accountRepository.find(params, userId)
+		return await this.accountRepository.find(params, userId)
 	}
 }

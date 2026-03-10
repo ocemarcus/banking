@@ -27,6 +27,7 @@ export class AuthService {
 		if (!passwordMatch) {
              throw new UnauthorizedException();
 		}
+        user.id = user.id.toString()
 
         const payload = {
             sub: user.id,

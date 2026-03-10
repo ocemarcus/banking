@@ -1,7 +1,7 @@
-import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { bigint, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const usersSchema = pgTable("users", {
-	id: uuid().primaryKey(),
+	id: bigint({ mode: 'bigint' }).primaryKey(),
 	fullName: varchar().notNull(),
 	cellPhone: varchar().notNull(),
 	document: varchar().notNull(),

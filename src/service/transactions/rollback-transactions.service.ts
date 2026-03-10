@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { AccountRepository } from "@repository/account.repository";
 import { TransactionsRepository } from "@repository/transactions.repository";
 import { uuidV7 } from "@share/uuidV7";
+import moment from "moment";
 
 @Injectable()
 export class RollbackTransactionsService {
@@ -41,19 +42,16 @@ export class RollbackTransactionsService {
 		const account = await this.accountRepository.findByAccountDetail({ accountNumber: transaction.owner.bankAccount }) 
 		if(!account?.id) {
 			//Conta sem vículo com banking
-			return 
+			return
 		}
 
 		const newTransaction = {
             id: await uuidV7(),
 
-            amount: transaction.amount,
-            
-            previousBalance: account.balance,
-            
+			amount: transaction.amount,
+			previousBalance: account.balance,
             statusTransaction: 'success',
-            typeTransaction: transaction.typeTransaction,
-			
+			typeTransaction: transaction.typeTransaction,
 			description: 'Extorno de transação',
 
             debitId: transaction.creditId,
@@ -62,11 +60,15 @@ export class RollbackTransactionsService {
             accountId: account.id,
         } as any
 
-		await this.transactionsRepository.save({
+		const payload = {
 			transaction: newTransaction, account: {
 				accountId: account.id,
 				version: +account.version,
-		}})
+			},
+			transactionDate: moment().format('YYYY-MM-DD')
+		} as any
+
+		await this.transactionsRepository.save(payload)
 
 
 	}

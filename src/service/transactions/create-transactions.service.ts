@@ -3,6 +3,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { AccountRepository } from "@repository/account.repository";
 import { TransactionsOwnerEntity, TransactionsRepository } from "@repository/transactions.repository";
 import { uuidV7 } from "@share/uuidV7";
+import moment from "moment";
 
 @Injectable()
 export class CreateTransactionsService {
@@ -22,8 +23,9 @@ export class CreateTransactionsService {
             throw new HttpException('Valor deve ser maior que 0', HttpStatus.BAD_REQUEST)
         }
 
+        const transactionOwnerId = await uuidV7()
         const transactionOwner: TransactionsOwnerEntity = {
-            id: await uuidV7(),
+            id: BigInt(transactionOwnerId),
             fullName: data.owner.fullName,
             cellPhone: data.owner.cellPhone,
             document: data.owner.document,
@@ -39,21 +41,27 @@ export class CreateTransactionsService {
             id: transactionId,
 
             amount: data.amount,
-            
-            previousBalance: account.balance,
-            
+
             typeTransaction: 'pixIn',
             statusTransaction: 'success',
 
             debitId,
             accountId: account.id,
+
+            previousBalance: account.balance,
         } as any
 
 
-        await this.transactionsRepository.save({transaction, account: {
-            accountId: account.id,  
-            version: +account.version,
-        }})
+        const payload = {
+            transaction,
+            account: {
+                accountId: account.id,
+                version: +account.version,
+            },
+            transactionDate: moment().format('YYYY-MM-DD')
+        }
+
+        await this.transactionsRepository.save(payload)
 
 	}
 }

@@ -1,7 +1,7 @@
 import { P2PTransactionsDto } from "@controller/transactions/dto/p2p-transactions.dto";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { AccountRepository } from "@repository/account.repository";
-import { TransactionsOwnerEntity, TransactionsRepository } from "@repository/transactions.repository";
+import { TransactionsRepository } from "@repository/transactions.repository";
 import { uuidV7 } from "@share/uuidV7";
 
 @Injectable()
@@ -31,31 +31,35 @@ export class P2PTransactionsService {
             throw new HttpException('Valor deve ser menor ou igual do saldo', HttpStatus.BAD_REQUEST)
         }
 
-        const debitOwner: TransactionsOwnerEntity = {
+        const debitOwnerId = await uuidV7()
+        const debitOwner = {
             bankName: 'AC',
-            id: await uuidV7(),
+            id: debitOwnerId,
             fullName: account.user.fullName,
             cellPhone: account.user.cellPhone,
             document: account.user.document,
             bankAccount: account.accountNumber,
-        }
+        } as any
 
         const debitId = await this.transactionsRepository.findOwnerOrSave(debitOwner)
 
-        const accountFrom = await this.accountRepository.findByAccountDetail({id: data.accountFromId})
+        const accountDestination = await this.accountRepository.findByAccountDetail({ id: data.accountDestinationId })
 
-        if (!accountFrom?.id) {
+        if (!accountDestination?.id) {
             throw new HttpException('Conta não encontrada', HttpStatus.BAD_REQUEST)
         }
 
-        const creditOwner: TransactionsOwnerEntity = {
+        const creditOwnerId = await uuidV7()
+
+        const creditOwner = {
             bankName: 'AC',
-            id: await uuidV7(),
-            document: accountFrom.user.document,
-            fullName: accountFrom.user.fullName,
-            cellPhone: accountFrom.user.cellPhone,
-            bankAccount: accountFrom.accountNumber,
-        }
+            id: creditOwnerId,
+            document: accountDestination.user.document,
+            fullName: accountDestination.user.fullName,
+            cellPhone: accountDestination.user.cellPhone,
+            bankAccount: accountDestination.accountNumber,
+        } as any
+
         const creditId = await this.transactionsRepository.findOwnerOrSave(creditOwner)
 
 		const transactions = 		[
@@ -68,32 +72,32 @@ export class P2PTransactionsService {
 			},
 			{
 				id: await uuidV7(),
-                
-				accountId: accountFrom.id,
-				previousBalance: accountFrom.balance,
+                accountId: accountDestination.id,
+                previousBalance: accountDestination.balance,
                 typeTransaction: "transferInternalIn",
 
 			},
 		]as any
 
         const payload = {
-        transactions: 
-        transactions.map((item: any) => ({...item, 
+            transactions:
+                transactions.map((item: any) => ({
+                    ...item,
 
 				debitId,
                 creditId,
 				amount: data.amount,
 				statusTransaction: "success",
-        })), 
+        })),
         account: {
             accountId: account.id,
             version: +account.version,
         },
-        accountFrom: {
-            accountId: accountFrom.id,
-            version: +accountFrom.version,
+            accountDestination: {
+                accountId: accountDestination.id,
+                version: +accountDestination.version,
          }
-        }
+        } as any
         await this.transactionsRepository.saveP2P(payload)
 
 	}

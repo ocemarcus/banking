@@ -1,7 +1,7 @@
 import { TransactionsDto } from "@controller/transactions/dto/transations.dto";
 import type { DB } from "@db/db.client";
 import { InjectDb } from "@db/db.provider";
-import { accountSchema } from "@db/schema/account.schema";
+import { accountMonthlyStatsSchema, accountSchema } from "@db/schema/account.schema";
 import {
 	transactionsOwnerSchema,
 	transactionsSchema,
@@ -25,7 +25,7 @@ export class TransactionsRepository {
 
 		const where = TransactionsRepository.search(params);
 
-		where.push(eq(accountSchema.userId, userId));
+		where.push(eq(accountSchema.userId, BigInt(userId)));
 
 		const [data, total] = await Promise.all([
 			this.db
@@ -91,10 +91,12 @@ export class TransactionsRepository {
 		transaction: CreateTransactionsEntity;
 		account: {
 			version: number;
-			accountId: string;
-		};
+			accountId: bigint;
+		},
+		transactionDate: string
 	}): Promise<void> {
 		await this.db.transaction(async (tx) => {
+
 			const accountBalance = /In/.test(data.transaction.typeTransaction)
 				? sql`${accountSchema.balance} + ${data.transaction.amount}`
 				: sql`${accountSchema.balance} - ${data.transaction.amount}`;
@@ -116,6 +118,28 @@ export class TransactionsRepository {
 			if (!accountResponse) {
 				tx.rollback();
 			}
+
+			const inOut = /In/.test(data.transaction.typeTransaction) ? 'totalIn' : 'totalOut'
+
+			await tx.insert(accountMonthlyStatsSchema).values({
+
+				transactionCount: '1',
+				[inOut]: data.transaction.amount,
+
+				transactionDate: data.transactionDate,
+				accountId: data.account.accountId,
+			} as any).onConflictDoUpdate({
+				target: [
+					accountMonthlyStatsSchema.accountId,
+					accountMonthlyStatsSchema.transactionDate
+				],
+				set: {
+					totalIn: sql`${accountMonthlyStatsSchema.totalIn} + excluded."totalIn"`,
+					totalOut: sql`${accountMonthlyStatsSchema.totalOut} + excluded."totalOut"`,
+					transactionCount: sql`${accountMonthlyStatsSchema.transactionCount} + 1`,
+				}
+			})
+
 			data.transaction.nextBalance = accountResponse.balance;
 			await tx.insert(transactionsSchema).values(data.transaction);
 		});
@@ -153,8 +177,8 @@ export class TransactionsRepository {
 			)
 			.where(
 				and(
-					eq(accountSchema.userId, userId),
-					eq(transactionsSchema.id, transactionId),
+					eq(accountSchema.userId, BigInt(userId)),
+					eq(transactionsSchema.id, BigInt(transactionId)),
 				),
 			);
 		return response;
@@ -162,9 +186,9 @@ export class TransactionsRepository {
 
 	async rollback(data: {
 		amount: number;
-		transactionId: string;
+		transactionId: bigint;
 
-		accountId: string;
+		accountId: bigint;
 		accountBalance: number;
 		accountVersion: number;
 	}): Promise<void> {
@@ -201,19 +225,19 @@ export class TransactionsRepository {
 
 		if (!response?.id) {
 			await this.db.insert(transactionsOwnerSchema).values(owner);
-			return owner.id;
+			return owner.id.toString();
 		}
-		return response.id;
+		return response.id.toString();
 	}
 	async saveP2P(data: {
 		transactions: CreateTransactionsEntity[];
 		account: {
 			version: number;
-			accountId: string;
+			accountId: bigint;
 		};
-		accountFrom: {
+		accountDestination: {
 			version: number;
-			accountId: string;
+			accountId: bigint;
 		};
 	}): Promise<void> {
 		await this.db.transaction(async (tx) => {
@@ -236,7 +260,7 @@ export class TransactionsRepository {
 			if (!accountResponse) {
 				tx.rollback();
 			}
-			const [accountFromResponse] = await tx
+			const [accountDestinationResponse] = await tx
 				.update(accountSchema)
 				.set({
 					version: sql`${accountSchema.version} + 1`,
@@ -244,13 +268,16 @@ export class TransactionsRepository {
 				})
 				.where(
 					and(
-						eq(accountSchema.id, data.accountFrom.accountId),
-						eq(accountSchema.version, data.accountFrom.version.toString()),
+						eq(accountSchema.id, data.accountDestination.accountId),
+						eq(
+							accountSchema.version,
+							data.accountDestination.version.toString(),
+						),
 					),
 				)
 				.returning();
 
-			if (!accountFromResponse) {
+			if (!accountDestinationResponse) {
 				tx.rollback();
 			}
 
@@ -258,8 +285,8 @@ export class TransactionsRepository {
 				if (item.accountId === accountResponse.id) {
 					item.nextBalance = accountResponse.balance;
 				}
-				if (item.accountId === accountFromResponse.id) {
-					item.nextBalance = accountFromResponse.balance;
+				if (item.accountId === accountDestinationResponse.id) {
+					item.nextBalance = accountDestinationResponse.balance;
 				}
 			}
 			await tx.insert(transactionsSchema).values(data.transactions);

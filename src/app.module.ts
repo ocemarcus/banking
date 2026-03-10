@@ -1,10 +1,10 @@
+import { UsersModule } from "@cqrs/users/users.module";
 import { DbModule } from "@db/db.module";
+import { AccountModule } from "@module/account.module";
+import { AuthModule } from "@module/auth.module";
+import { TransactionsModule } from "@module/transactions.module";
 import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { LoggerMiddleware } from "./middleware/logger.middleware";
-import { AccountModule } from "./modules/account.module";
-import { AuthModule } from "./modules/auth.module";
-import { TransactionsModule } from "./modules/transactions.module";
-import { UsersModule } from "./modules/users.module";
 
 @Module({
 	imports: [

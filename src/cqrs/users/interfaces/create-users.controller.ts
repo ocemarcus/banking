@@ -1,11 +1,12 @@
+import { CreateUsersCommand } from "@cqrs/users/commands/impl/create-users.command";
 import { Body, Controller, Post } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { ApiOperation } from "@nestjs/swagger";
-import { CreateUsersService } from "@service/users/create-users.service";
 import { CreateUsersDto } from "./dto/create-users.dto";
 
 @Controller("/users")
 export class CreateUsersController {
-	constructor(private readonly accountService: CreateUsersService) {}
+	constructor(private readonly command: CommandBus) { }
 
 	@Post()
 	@ApiOperation({
@@ -13,6 +14,10 @@ export class CreateUsersController {
 		description: "Api para criação do usuário",
 	})
 	async create(@Body() data: CreateUsersDto) {
-		return this.accountService.execute(data);
+		return this.command.execute(
+			new CreateUsersCommand(
+			   data	
+			),
+		);
 	}
 }

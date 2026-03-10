@@ -1,4 +1,6 @@
+
+import { simpleflake } from 'simpleflakes'
+
 export async function uuidV7() {
-  const { v7 } = await import('uuid');
-  return v7()
+  return simpleflake().toString()
 }

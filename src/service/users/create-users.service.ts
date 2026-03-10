@@ -1,4 +1,4 @@
-import { CreateUsersDto } from "@controller/users/dto/create-users.dto";
+import { CreateUsersDto } from "@cqrs/users/interfaces/dto/create-users.dto";
 import { UsersEntity } from "@entity/users.entity";
 import { Injectable } from "@nestjs/common";
 import { UsersRepository } from "@repository/users.repository";

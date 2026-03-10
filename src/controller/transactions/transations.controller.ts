@@ -6,7 +6,7 @@ import {
 	ApiResponse,
 	ApiTags,
 } from "@nestjs/swagger";
-import { TransactionsService } from "@service/transactions/transactions.serivce";
+import { TransactionsService } from "@service/transactions/transactions.service";
 import { SwaggerError400, SwaggerError401 } from "@share/swagger";
 import { TransactionsSwaggerResponse } from "./doc/transactions.doc";
 import { TransactionsDto } from "./dto/transations.dto";

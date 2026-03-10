@@ -1,10 +1,10 @@
 import { AuthGuard } from "@auth/auth.guard";
 import { Controller, Get, Query, Request, UseGuards } from "@nestjs/common";
 import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiResponse,
-    ApiTags,
+	ApiBearerAuth,
+	ApiOperation,
+	ApiResponse,
+	ApiTags,
 } from "@nestjs/swagger";
 import { AccountsService } from "@service/account/accounts.service";
 import { SwaggerError400, SwaggerError401 } from "@share/swagger";

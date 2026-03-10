@@ -1,6 +1,8 @@
-import { PaginationBase } from "@share/pagination-base";
+import { IsNumberString, IsOptional } from "class-validator";
 
 
-export class AccountsDto extends PaginationBase {
-
+export class AccountsDto {
+    @IsNumberString()
+    @IsOptional()
+    document: string
 }

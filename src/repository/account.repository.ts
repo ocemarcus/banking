@@ -17,7 +17,7 @@ export class AccountRepository {
 		const where = AccountRepository.search(params)
 
 		where.push(
-			eq(accountSchema.userId, userId)
+			eq(accountSchema.userId, userId as any)
 		)
 
 		const [data, total] = await Promise.all([

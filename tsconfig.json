@@ -31,7 +31,8 @@
 					"@validate/*": ["./src/validate/*"],
 					"@share/*": ["./src/share/*"],
 					"@auth/*": ["./src/auth/*"],
-					"@validator/*": ["./src/validator/*"]
+					"@validator/*": ["./src/validator/*"],
+					"@cqrs/*": ["./src/cqrs/*"]
 				}
   }
 }

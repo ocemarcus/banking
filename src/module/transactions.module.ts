@@ -10,7 +10,7 @@ import { UsersRepository } from "@repository/users.repository";
 import { CreateTransactionsService } from "@service/transactions/create-transactions.service";
 import { P2PTransactionsService } from "@service/transactions/p2p-transactions.service";
 import { RollbackTransactionsService } from "@service/transactions/rollback-transactions.service";
-import { TransactionsService } from "@service/transactions/transactions.serivce";
+import { TransactionsService } from "@service/transactions/transactions.service";
 
 @Module({
 	imports: [

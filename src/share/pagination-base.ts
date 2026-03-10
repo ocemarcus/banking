@@ -27,12 +27,13 @@ export class Pagination implements ValidatorConstraintInterface {
 
 export class PaginationBase {
 	@IsNumberString()
+	@IsOptional()
 	@ApiProperty({
 		example: '10',
 		type: 'number',
 		description: 'Limite de paginas'
 	})
-	limit = 10;
+	limit = '10';
 
 	@Validate(Pagination)
 	@ApiProperty({

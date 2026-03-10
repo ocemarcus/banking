@@ -1,16 +1,90 @@
 {
-  "id": "21ede1e7-30d5-49ce-aa48-27ffb1140121",
-  "prevId": "aac407f9-1e54-450c-9831-732085d493f7",
+  "id": "b381e93a-7b94-4653-802b-6915029c476d",
+  "prevId": "882bf239-3a19-4a7b-bc49-a2bfed2a0659",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.accountMonthlyStats": {
+      "name": "accountMonthlyStats",
+      "schema": "",
+      "columns": {
+        "totalIn": {
+          "name": "totalIn",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "totalOut": {
+          "name": "totalOut",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "transactionCount": {
+          "name": "transactionCount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "transactionDate": {
+          "name": "transactionDate",
+          "type": "date",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "accountId": {
+          "name": "accountId",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "accountMonthlyStats_accountId_account_id_fk": {
+          "name": "accountMonthlyStats_accountId_account_id_fk",
+          "tableFrom": "accountMonthlyStats",
+          "tableTo": "account",
+          "columnsFrom": [
+            "accountId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.account": {
       "name": "account",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true
         },
@@ -41,7 +115,7 @@
         },
         "userId": {
           "name": "userId",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },
@@ -96,7 +170,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true
         },
@@ -159,7 +233,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true
         },
@@ -172,6 +246,13 @@
         "typeTransaction": {
           "name": "typeTransaction",
           "type": "typeTransaction",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "statusTransaction": {
+          "name": "statusTransaction",
+          "type": "statusTransaction",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
@@ -196,19 +277,19 @@
         },
         "accountId": {
           "name": "accountId",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },
         "debitId": {
           "name": "debitId",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },
         "creditId": {
           "name": "creditId",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },
@@ -281,7 +362,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true
         },
@@ -303,14 +384,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "email": {
-          "name": "email",
+        "password": {
+          "name": "password",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
-        "password": {
-          "name": "password",
+        "email": {
+          "name": "email",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
@@ -333,7 +414,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -354,7 +443,8 @@
       "values": [
         "error",
         "success",
-        "pending"
+        "pending",
+        "rollback"
       ]
     },
     "public.typeTransaction": {
