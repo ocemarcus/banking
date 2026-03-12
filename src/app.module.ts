@@ -1,8 +1,8 @@
+import { AccountModule } from "@cqrs/account/account.module";
 import { DashboardModule } from "@cqrs/dashboard/dashboard.module";
 import { TransactionsModule } from "@cqrs/transactions/transactions.module";
 import { UsersModule } from "@cqrs/users/users.module";
 import { DbModule } from "@db/db.module";
-import { AccountModule } from "@module/account.module";
 import { AuthModule } from "@module/auth.module";
 import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { LoggerMiddleware } from "./middleware/logger.middleware";

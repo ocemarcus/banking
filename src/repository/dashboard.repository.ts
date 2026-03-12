@@ -3,7 +3,7 @@ import { InjectDb } from "@db/db.provider";
 import { accountSchema } from "@db/schema/account.schema";
 import { transactionDailyStatsSchema } from "@db/schema/transactions.schema";
 import { Injectable } from "@nestjs/common";
-import { eq, sum } from "drizzle-orm";
+import { desc, eq, sum } from "drizzle-orm";
 
 
 
@@ -34,6 +34,7 @@ export class DashboardRepository {
         .where(
             eq(accountSchema.userId, BigInt(userId))
         )
+            .orderBy(desc(transactionDailyStatsSchema.transactionCount))
 
         if(!balance?.balance) {
             return {
@@ -52,14 +53,5 @@ export class DashboardRepository {
              + +total.transactionDailyStats.transferInternalOut!
              + +total.transactionDailyStats.bankSplitOut!,
         }
-    }
-
-    public async dailyDebitCredit(params: {
-        startDate: string
-        endDate: string
-    }) {
-
-
-       // const [] = await this.db.select().from(accountMonthlyStatsSchema).where()
     }
 }

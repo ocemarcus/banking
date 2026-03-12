@@ -1,13 +1,12 @@
-import { TransactionsDto } from "@controller/transactions/dto/transations.dto";
+import { TransactionsDto } from "@cqrs/transactions/interfaces/dto/transactions.dto";
 import type { DB } from "@db/db.client";
 import { InjectDb } from "@db/db.provider";
 import {
 	accountSchema,
 } from "@db/schema/account.schema";
 import {
-	transactionDailyStatsSchema,
 	transactionsOwnerSchema,
-	transactionsSchema,
+	transactionsSchema
 } from "@db/schema/transactions.schema";
 import { Injectable } from "@nestjs/common";
 import { and, count, desc, eq, gte, lte, sql } from "drizzle-orm";
@@ -96,7 +95,6 @@ export class TransactionsRepository {
 			version: number;
 			accountId: bigint;
 		};
-		transactionDate: string;
 	}): Promise<void> {
 		await this.db.transaction(async (tx) => {
 			const accountBalance = /In/.test(data.transaction.typeTransaction)
@@ -121,30 +119,6 @@ export class TransactionsRepository {
 				tx.rollback();
 			}
 
-			await tx
-				.insert(transactionDailyStatsSchema)
-				.values({
-					transactionCount: "1",
-					[data.transaction.typeTransaction]: data.transaction.amount,
-
-					accountId: data.account.accountId,
-					transactionDate: data.transactionDate,
-				} as any)
-				.onConflictDoUpdate({
-					target: [
-						transactionDailyStatsSchema.accountId,
-						transactionDailyStatsSchema.transactionDate,
-					],
-					set: {
-						pixIn: sql`${transactionDailyStatsSchema.pixIn} + excluded."pixIn"`,
-						pixOut: sql`${transactionDailyStatsSchema.pixOut} + excluded."pixOut"`,
-						bankSplitIn: sql`${transactionDailyStatsSchema.bankSplitIn} + excluded."bankSplitIn"`,
-						bankSplitOut: sql`${transactionDailyStatsSchema.bankSplitOut} + excluded."bankSplitOut"`,
-						transferInternalIn: sql`${transactionDailyStatsSchema.transferInternalIn} + excluded."transferInternalIn"`,
-						transferInternalOut: sql`${transactionDailyStatsSchema.transferInternalOut} + excluded."transferInternalOut"`,
-						transactionCount: sql`${transactionDailyStatsSchema.transactionCount} + 1`,
-					},
-				});
 
 			data.transaction.nextBalance = accountResponse.balance;
 			await tx.insert(transactionsSchema).values(data.transaction);

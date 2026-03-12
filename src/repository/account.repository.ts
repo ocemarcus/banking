@@ -16,6 +16,8 @@ export class AccountRepository {
 	async find(params: AccountsDto, userId: string) {
 		const where = AccountRepository.search(params)
 
+		console.log(userId)
+
 		where.push(
 			eq(accountSchema.userId, userId as any)
 		)

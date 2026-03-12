@@ -1,5 +1,5 @@
 import { ArrowDownCircle, ArrowUpCircle, LayoutDashboard } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	Area,
 	AreaChart,
@@ -9,6 +9,7 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+import { getDashboard } from "../../api/dashboard";
 import {
 	Card,
 	CardContent,
@@ -16,8 +17,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../../components/ui/card";
-
-import { getDashboard } from "../../api/dashboard";
 
 const initialChartData = [
 	{ month: "Jan", entradas: 3600, saidas: 1700 },
@@ -27,8 +26,6 @@ const initialChartData = [
 	{ month: "Mai", entradas: 5900, saidas: 2800 },
 	{ month: "Jun", entradas: 7300, saidas: 3500 },
 ];
-
- 
 
 export function OverviewPage({ user, totals }) {
 	const saldo = totals.entradas - totals.saidas;
@@ -67,7 +64,10 @@ export function OverviewPage({ user, totals }) {
 					</CardHeader>
 					<CardContent>
 						<p className="text-2xl font-bold">
-							R$ {Number(dashboard.balance).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+							R${" "}
+							{Number(dashboard.balance).toLocaleString("pt-BR", {
+								minimumFractionDigits: 2,
+							})}
 						</p>
 						<p className="text-xs text-muted-foreground">Olá, {user.email}</p>
 					</CardContent>

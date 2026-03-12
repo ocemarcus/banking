@@ -8,8 +8,8 @@ import {
 	ApiTags,
 } from "@nestjs/swagger";
 import { SwaggerError400, SwaggerError401 } from "@share/swagger";
-import { P2PTransactionsDto } from "../../../controller/transactions/dto/p2p-transactions.dto";
 import { P2PTransactionCommand } from "../commands/impl/p2p-transaction.command";
+import { P2PTransactionsDto } from "./dto/p2p-transactions.dto";
 
 @ApiBearerAuth()
 @ApiTags("transactions")

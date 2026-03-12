@@ -1,4 +1,4 @@
-import { TransactionsDto } from "@controller/transactions/dto/transations.dto";
+import { TransactionsDto } from "@cqrs/transactions/interfaces/dto/transactions.dto";
 
 
 export class TransactionsQueryCommand {

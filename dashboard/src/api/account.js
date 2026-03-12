@@ -26,3 +26,7 @@ export async function createAccount({ accountType, document }) {
     body: { accountType, document },
   })
 }
+
+export async function getAccountDetail(accountNumber) {
+  return request(`/account/detail/${accountNumber}`)
+}

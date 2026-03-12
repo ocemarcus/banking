@@ -10,6 +10,17 @@ export class DailyStatsTransactionsHandler
 		private readonly dailyStatsTransactionsRepository: DailyStatsTransactionsRepository,
 	) {}
 	public async execute(command: DailyStatsTransactionsCommand) {
+
+		if (command.typeTransaction) {
+
+			await this.dailyStatsTransactionsRepository.dailyStats({
+				amount: command.amount,
+				accountOriginId: command.accountOriginId,
+				typeTransaction: command.typeTransaction,
+			})
+			return
+		}
+
 		await this.dailyStatsTransactionsRepository.dailyStatsP2P(command);
 	}
 }

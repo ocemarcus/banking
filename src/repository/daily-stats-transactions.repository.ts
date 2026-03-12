@@ -10,6 +10,42 @@ import moment from "moment";
 export class DailyStatsTransactionsRepository {
      constructor(@InjectDb() private readonly db: DB) {}
 
+	async dailyStats(data: {
+		amount: number
+		typeTransaction: string
+		accountOriginId: string
+	}) {
+		const transactionDate = new Date()
+		await this.db.transaction(async (tx) => {
+			await tx
+				.insert(transactionDailyStatsSchema)
+				.values({
+					transactionCount: "1",
+					[data.typeTransaction]: data.amount,
+
+					transactionDate,
+					updatedAt: new Date(),
+					accountId: data.accountOriginId,
+				} as any)
+				.onConflictDoUpdate({
+					target: [
+						transactionDailyStatsSchema.accountId,
+						transactionDailyStatsSchema.transactionDate,
+					],
+					set: {
+						pixIn: sql`${transactionDailyStatsSchema.pixIn} + excluded."pixIn"`,
+						pixOut: sql`${transactionDailyStatsSchema.pixOut} + excluded."pixOut"`,
+						bankSplitIn: sql`${transactionDailyStatsSchema.bankSplitIn} + excluded."bankSplitIn"`,
+						bankSplitOut: sql`${transactionDailyStatsSchema.bankSplitOut} + excluded."bankSplitOut"`,
+						transferInternalIn: sql`${transactionDailyStatsSchema.transferInternalIn} + excluded."transferInternalIn"`,
+						transferInternalOut: sql`${transactionDailyStatsSchema.transferInternalOut} + excluded."transferInternalOut"`,
+						transactionCount: sql`${transactionDailyStatsSchema.transactionCount} + 1`,
+					},
+				});
+		})
+
+	}
+
 
      async dailyStatsP2P(data: {
          amount: number
@@ -28,6 +64,7 @@ export class DailyStatsTransactionsRepository {
 					transferInternalIn: data.amount,
 
 					transactionDate,
+					updatedAt: new Date(),
 					accountId: data.accountDestinationId,
 				} as any)
 				.onConflictDoUpdate({
@@ -48,6 +85,7 @@ export class DailyStatsTransactionsRepository {
 					transferInternalOut: data.amount,
 
 					transactionDate,
+					updatedAt: new Date(),
 					accountId: data.accountOriginId,
 				} as any)
 				.onConflictDoUpdate({
