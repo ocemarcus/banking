@@ -1,11 +1,10 @@
 import {
 	bigint,
-	date,
 	numeric,
 	pgEnum,
 	pgTable,
 	timestamp,
-	varchar,
+	varchar
 } from "drizzle-orm/pg-core";
 import { usersSchema } from "./users.schema";
 
@@ -34,17 +33,15 @@ export const accountSchema = pgTable("account", {
 	}).defaultNow(),
 });
 
-export const accountMonthlyStatsSchema = pgTable("accountMonthlyStats", {
 
-	totalIn: numeric().default("0"),
-	totalOut: numeric().default("0"),
-	transactionCount: numeric().default("0"),
 
-	transactionDate: date().primaryKey(),
+export const accountSnapshotSchema = pgTable("accountSnapshot", {
+	id: bigint({ mode: "bigint" }).primaryKey(),
 
-	accountId: bigint({ mode: "bigint" })
-		.references(() => accountSchema.id)
-		.primaryKey(),
+	balance: numeric().notNull(),
+	version: numeric().notNull(),
+
+	accountId: bigint({ mode: "bigint" }).references(() => accountSchema.id),
 
 	createdAt: timestamp({
 		withTimezone: true,
@@ -56,3 +53,5 @@ export const accountMonthlyStatsSchema = pgTable("accountMonthlyStats", {
 		mode: "string",
 	}).defaultNow(),
 });
+
+

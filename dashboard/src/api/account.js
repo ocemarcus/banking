@@ -1,7 +1,23 @@
 import { request } from '../lib/api'
 
 export async function getAccount() {
-  return request('/account')
+  const res = await request('/account')
+  if (!res) return res
+
+  const safeNumber = (v) => {
+    const n = Number(v)
+    return Number.isFinite(n) ? n / 100 : 0
+  }
+
+  if (Array.isArray(res.data)) {
+    const data = res.data.map((item) => ({
+      ...item,
+      balance: safeNumber(item.balance),
+    }))
+    return { ...res, data }
+  }
+
+  return res
 }
 
 export async function createAccount({ accountType, document }) {

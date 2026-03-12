@@ -1,16 +1,16 @@
 import { AuthGuard } from "@auth/auth.guard";
 import { Controller, Get, Param, Request, UseGuards } from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { RollbackTransactionsService } from "@service/transactions/rollback-transactions.service";
 import { SwaggerError400, SwaggerError401 } from "@share/swagger";
+import { RollbackTransactionsCommand } from "../commands/impl/rollback-transactions.command";
 
-@Controller("/transactions/:id/rollback")
 @ApiBearerAuth()
 @ApiTags('transactions')
+@Controller("/transactions/:id/rollback")
 export class RollbackTransactionsController {
-	constructor(
-		private readonly transactionsService: RollbackTransactionsService,
-	) {}
+
+	constructor(private readonly command: CommandBus) { }
 
 	@Get()
 	@UseGuards(AuthGuard)
@@ -21,6 +21,7 @@ export class RollbackTransactionsController {
 	@ApiResponse(SwaggerError400)
 	@ApiResponse(SwaggerError401)
 	async create(@Param('id') transactionId: string, @Request() req: any) {
-		return this.transactionsService.execute(transactionId, req.user.sub);
+		const userId = req.user.sub
+		return await this.command.execute(new RollbackTransactionsCommand(transactionId, userId ))
 	}
 }

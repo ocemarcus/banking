@@ -1,6 +1,6 @@
 
 import { simpleflake } from 'simpleflakes'
 
-export async function uuidV7() {
+export async function generateId() {
   return simpleflake().toString()
 }

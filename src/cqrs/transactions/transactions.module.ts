@@ -1,34 +1,38 @@
 import { AuthModule } from "@auth/auth.module";
-import { CreateTransactionsController } from "@controller/transactions/create-transactions.controller";
-import { TransactionsController } from "@controller/transactions/transations.controller";
 import { P2PTransactionsController } from "@cqrs/transactions/interfaces/p2p-transactions.controller";
 import { RollbackTransactionsController } from "@cqrs/transactions/interfaces/rollback-transactions.controller";
 import { Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 import { AccountRepository } from "@repository/account.repository";
+import { DailyStatsTransactionsRepository } from "@repository/daily-stats-transactions.repository";
 import { TransactionsRepository } from "@repository/transactions.repository";
 import { UsersRepository } from "@repository/users.repository";
-import { CreateTransactionsService } from "@service/transactions/create-transactions.service";
-import { P2PTransactionsService } from "@service/transactions/p2p-transactions.service";
-import { RollbackTransactionsService } from "@service/transactions/rollback-transactions.service";
-import { TransactionsService } from "@service/transactions/transactions.service";
+import { DailyStatsTransactionsHandler } from "./commands/handlers/daily-stats-transactions.handler";
+import { P2PTransactionsHandler } from "./commands/handlers/p2p-transaction.handler";
+import { RollbackTransactionsHandler } from "./commands/handlers/rollback-transactions.handler";
+import { TransactionsController } from "./interfaces/transactions.controller";
+import { TransactionsHandler } from "./query/handlers/transactions.handler";
+
+const commands = [
+	TransactionsHandler,
+	P2PTransactionsHandler,
+	DailyStatsTransactionsHandler,
+	RollbackTransactionsHandler,
+];
 
 @Module({
 	imports: [CqrsModule, AuthModule],
 	controllers: [
-		CreateTransactionsController,
 		RollbackTransactionsController,
 		P2PTransactionsController,
 		TransactionsController,
 	],
 	providers: [
-		RollbackTransactionsService,
-		CreateTransactionsService,
 		TransactionsRepository,
 		AccountRepository,
 		UsersRepository,
-		P2PTransactionsService,
-		TransactionsService,
+		DailyStatsTransactionsRepository,
+		...commands,
 	],
 })
 export class TransactionsModule {}

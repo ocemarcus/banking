@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export async function request(path, { method = 'GET', headers = {}, body, skipAuthRedirect = false } = {}) {
   const url = path.startsWith('http') ? path : `${API_URL}${path}`;
@@ -14,6 +14,9 @@ export async function request(path, { method = 'GET', headers = {}, body, skipAu
   if (token) fetchHeaders.set('Authorization', `Bearer ${token}`);
 
   const opts = { method, headers: fetchHeaders };
+  // Disable browser caching for API requests
+  // `no-store` ensures the browser will always request the resource from the network
+  opts.cache = 'no-store';
   if (body) opts.body = body instanceof FormData ? body : JSON.stringify(body);
 
   const res = await fetch(url, opts);

@@ -1,8 +1,10 @@
 import { CreateTransactionsDto } from "@controller/transactions/dto/create-transactions.dto";
+import { DashboardQueryBus } from "@cqrs/dashboard/query/impl/dashboard.query";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { QueryBus } from "@nestjs/cqrs";
 import { AccountRepository } from "@repository/account.repository";
 import { TransactionsOwnerEntity, TransactionsRepository } from "@repository/transactions.repository";
-import { uuidV7 } from "@share/uuidV7";
+import { generateId } from "@share/generate-id";
 import moment from "moment";
 
 @Injectable()
@@ -10,6 +12,7 @@ export class CreateTransactionsService {
 	constructor(
 		private readonly transactionsRepository: TransactionsRepository,
 		private readonly accountRepository: AccountRepository,
+        private readonly queryBus: QueryBus
 	) {}
 
 	public async execute(data: CreateTransactionsDto) {
@@ -23,7 +26,7 @@ export class CreateTransactionsService {
             throw new HttpException('Valor deve ser maior que 0', HttpStatus.BAD_REQUEST)
         }
 
-        const transactionOwnerId = await uuidV7()
+        const transactionOwnerId = await generateId()
         const transactionOwner: TransactionsOwnerEntity = {
             id: BigInt(transactionOwnerId),
             fullName: data.owner.fullName,
@@ -35,7 +38,7 @@ export class CreateTransactionsService {
 
         const debitId = await this.transactionsRepository.findOwnerOrSave(transactionOwner)
 
-		const transactionId = await uuidV7();
+        const transactionId = await generateId();
 
 		const transaction = {
             id: transactionId,
@@ -62,6 +65,10 @@ export class CreateTransactionsService {
         }
 
         await this.transactionsRepository.save(payload)
+
+        this.queryBus.execute(new DashboardQueryBus(
+            account.id.toString()
+        ))
 
 	}
 }

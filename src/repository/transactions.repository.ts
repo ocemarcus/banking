@@ -1,8 +1,11 @@
 import { TransactionsDto } from "@controller/transactions/dto/transations.dto";
 import type { DB } from "@db/db.client";
 import { InjectDb } from "@db/db.provider";
-import { accountMonthlyStatsSchema, accountSchema } from "@db/schema/account.schema";
 import {
+	accountSchema,
+} from "@db/schema/account.schema";
+import {
+	transactionDailyStatsSchema,
 	transactionsOwnerSchema,
 	transactionsSchema,
 } from "@db/schema/transactions.schema";
@@ -92,11 +95,10 @@ export class TransactionsRepository {
 		account: {
 			version: number;
 			accountId: bigint;
-		},
-		transactionDate: string
+		};
+		transactionDate: string;
 	}): Promise<void> {
 		await this.db.transaction(async (tx) => {
-
 			const accountBalance = /In/.test(data.transaction.typeTransaction)
 				? sql`${accountSchema.balance} + ${data.transaction.amount}`
 				: sql`${accountSchema.balance} - ${data.transaction.amount}`;
@@ -119,26 +121,30 @@ export class TransactionsRepository {
 				tx.rollback();
 			}
 
-			const inOut = /In/.test(data.transaction.typeTransaction) ? 'totalIn' : 'totalOut'
+			await tx
+				.insert(transactionDailyStatsSchema)
+				.values({
+					transactionCount: "1",
+					[data.transaction.typeTransaction]: data.transaction.amount,
 
-			await tx.insert(accountMonthlyStatsSchema).values({
-
-				transactionCount: '1',
-				[inOut]: data.transaction.amount,
-
-				transactionDate: data.transactionDate,
-				accountId: data.account.accountId,
-			} as any).onConflictDoUpdate({
-				target: [
-					accountMonthlyStatsSchema.accountId,
-					accountMonthlyStatsSchema.transactionDate
-				],
-				set: {
-					totalIn: sql`${accountMonthlyStatsSchema.totalIn} + excluded."totalIn"`,
-					totalOut: sql`${accountMonthlyStatsSchema.totalOut} + excluded."totalOut"`,
-					transactionCount: sql`${accountMonthlyStatsSchema.transactionCount} + 1`,
-				}
-			})
+					accountId: data.account.accountId,
+					transactionDate: data.transactionDate,
+				} as any)
+				.onConflictDoUpdate({
+					target: [
+						transactionDailyStatsSchema.accountId,
+						transactionDailyStatsSchema.transactionDate,
+					],
+					set: {
+						pixIn: sql`${transactionDailyStatsSchema.pixIn} + excluded."pixIn"`,
+						pixOut: sql`${transactionDailyStatsSchema.pixOut} + excluded."pixOut"`,
+						bankSplitIn: sql`${transactionDailyStatsSchema.bankSplitIn} + excluded."bankSplitIn"`,
+						bankSplitOut: sql`${transactionDailyStatsSchema.bankSplitOut} + excluded."bankSplitOut"`,
+						transferInternalIn: sql`${transactionDailyStatsSchema.transferInternalIn} + excluded."transferInternalIn"`,
+						transferInternalOut: sql`${transactionDailyStatsSchema.transferInternalOut} + excluded."transferInternalOut"`,
+						transactionCount: sql`${transactionDailyStatsSchema.transactionCount} + 1`,
+					},
+				});
 
 			data.transaction.nextBalance = accountResponse.balance;
 			await tx.insert(transactionsSchema).values(data.transaction);
@@ -184,39 +190,6 @@ export class TransactionsRepository {
 		return response;
 	}
 
-	async rollback(data: {
-		amount: number;
-		transactionId: bigint;
-
-		accountId: bigint;
-		accountBalance: number;
-		accountVersion: number;
-	}): Promise<void> {
-		await this.db.transaction(async (tx) => {
-			const [accountResponse] = await tx
-				.update(accountSchema)
-				.set({
-					version: sql`${accountSchema.version} + 1`,
-					balance: sql`${accountSchema.balance} - ${data.amount}`,
-				})
-				.where(
-					and(
-						eq(accountSchema.id, data.accountId),
-						eq(accountSchema.version, data.accountVersion.toString()),
-					),
-				)
-				.returning();
-
-			if (!accountResponse) {
-				tx.rollback();
-			}
-			await tx
-				.update(transactionsSchema)
-				.set({ statusTransaction: "rollback" } as any)
-				.where(eq(transactionsSchema.id, data.transactionId));
-		});
-	}
-
 	async findOwnerOrSave(owner: TransactionsOwnerEntity): Promise<string> {
 		const [response] = await this.db
 			.select({ id: transactionsOwnerSchema.id })
@@ -231,7 +204,7 @@ export class TransactionsRepository {
 	}
 	async saveP2P(data: {
 		transactions: CreateTransactionsEntity[];
-		account: {
+		accountOrigin: {
 			version: number;
 			accountId: bigint;
 		};
@@ -243,7 +216,7 @@ export class TransactionsRepository {
 		await this.db.transaction(async (tx) => {
 			const [transaction] = data.transactions;
 
-			const [accountResponse] = await tx
+			const [accountOrigin] = await tx
 				.update(accountSchema)
 				.set({
 					version: sql`${accountSchema.version} + 1`,
@@ -251,16 +224,16 @@ export class TransactionsRepository {
 				})
 				.where(
 					and(
-						eq(accountSchema.id, data.account.accountId),
-						eq(accountSchema.version, data.account.version.toString()),
+						eq(accountSchema.id, data.accountOrigin.accountId),
+						eq(accountSchema.version, data.accountOrigin.version.toString()),
 					),
 				)
 				.returning();
 
-			if (!accountResponse) {
+			if (!accountOrigin) {
 				tx.rollback();
 			}
-			const [accountDestinationResponse] = await tx
+			const [accountDestination] = await tx
 				.update(accountSchema)
 				.set({
 					version: sql`${accountSchema.version} + 1`,
@@ -277,19 +250,71 @@ export class TransactionsRepository {
 				)
 				.returning();
 
-			if (!accountDestinationResponse) {
+			if (!accountDestination) {
 				tx.rollback();
 			}
 
-			for (const item of data.transactions) {
-				if (item.accountId === accountResponse.id) {
-					item.nextBalance = accountResponse.balance;
-				}
-				if (item.accountId === accountDestinationResponse.id) {
-					item.nextBalance = accountDestinationResponse.balance;
-				}
-			}
+			data.transactions[0].nextBalance = accountOrigin.balance
+			data.transactions[1].nextBalance = accountDestination.balance
+
 			await tx.insert(transactionsSchema).values(data.transactions);
+		});
+	}
+
+	public async rollback(data: {
+		transaction: CreateTransactionsEntity;
+		accountOrigin: {
+			version: number;
+			accountId: bigint;
+		};
+		accountDestination: {
+			version: number;
+			accountId: bigint;
+		};
+	}): Promise<void> {
+
+		await this.db.transaction(async (tx) => {
+
+			const [accountOrigin] = await tx
+				.update(accountSchema)
+				.set({
+					version: sql`${accountSchema.version} + 1`,
+					balance: sql`${accountSchema.balance} - ${data.transaction.amount}`,
+				})
+				.where(
+					and(
+						eq(accountSchema.id, data.accountOrigin.accountId),
+						eq(accountSchema.version, data.accountOrigin.version.toString()),
+					),
+				)
+				.returning();
+
+			if (!accountOrigin) {
+				tx.rollback();
+			}
+			const [accountDestination] = await tx
+				.update(accountSchema)
+				.set({
+					version: sql`${accountSchema.version} + 1`,
+					balance: sql`${accountSchema.balance} + ${data.transaction.amount}`,
+				})
+				.where(
+					and(
+						eq(accountSchema.id, data.accountDestination.accountId),
+						eq(
+							accountSchema.version,
+							data.accountDestination.version.toString(),
+						),
+					),
+				)
+				.returning();
+
+			if (!accountDestination) {
+				tx.rollback();
+			}
+
+			data.transaction.nextBalance = accountOrigin.balance
+			await tx.insert(transactionsSchema).values(data.transaction);
 		});
 	}
 

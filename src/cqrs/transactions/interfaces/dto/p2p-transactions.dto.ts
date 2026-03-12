@@ -13,15 +13,15 @@ export class    P2PTransactionsDto {
 
      @IsNumberString()
     @ApiProperty({
-         example: '6933052677840146083',
+         example: '019c8a95-43e4-7797-88e6-67f00573ea54',
          description: 'ID data conta befeficiária'
     })
      accountDestinationId: string
 
      @IsNumberString()
     @ApiProperty({
-         example: '6933052677840146084',
+         example: '019c8a95-43e4-7797-88e6-67f00573ea54',
          description: 'Id da conta que sera enviado a tranferência'
     })
-     accountOriginId: string
+    accountId: string
 }
