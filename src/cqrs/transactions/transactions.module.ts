@@ -9,7 +9,8 @@ import { TransactionsRepository } from "@repository/transactions.repository";
 import { UsersRepository } from "@repository/users.repository";
 import { CreateTransactionsHandler } from "./commands/handlers/create-transactions.handler";
 import { DailyStatsTransactionsHandler } from "./commands/handlers/daily-stats-transactions.handler";
-import { P2PTransactionsHandler } from "./commands/handlers/p2p-transaction.handler";
+import { P2PProcessTransactionsHandler } from "./commands/handlers/p2p-process-transactions.handler";
+import { P2PTransactionsHandler } from "./commands/handlers/p2p-transactions.handler";
 import { RollbackTransactionsHandler } from "./commands/handlers/rollback-transactions.handler";
 import { CreateTransactionsController } from "./interfaces/create-transactions.controller";
 import { TransactionsController } from "./interfaces/transactions.controller";
@@ -21,6 +22,7 @@ const commands = [
 	CreateTransactionsHandler,
 	DailyStatsTransactionsHandler,
 	RollbackTransactionsHandler,
+	P2PProcessTransactionsHandler,
 ];
 
 @Module({

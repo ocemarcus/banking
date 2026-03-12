@@ -1,12 +1,12 @@
 import { AccountsDto } from "@controller/account/dto/accounts.dto";
 import type { DB } from "@db/db.client";
 import { InjectDb } from "@db/db.provider";
-import { accountSchema } from "@db/schema/account.schema";
+import { accountSchema, accountSnapshotSchema, accountUsersSnapshotSchema } from "@db/schema/account.schema";
 import { usersSchema } from "@db/schema/users.schema";
 import { AccountEntity } from "@entity/account.entity";
 import { Injectable } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, sql } from "drizzle-orm";
 
 
 @Injectable()
@@ -32,7 +32,19 @@ export class AccountRepository {
 	}
 
 	async save(data: AccountEntity): Promise<void> {
-		await this.db.insert(accountSchema).values(data as any);
+
+		await this.db.transaction(async (tx) => {
+
+			await tx.insert(accountSchema).values(data as any);
+			await tx.insert(accountSnapshotSchema).values({ accountId: data.id } as any)
+			await tx.insert(accountUsersSnapshotSchema).values({ userId: data.userId } as any)
+				.onConflictDoUpdate({
+					target: [accountUsersSnapshotSchema.userId], set: {
+						userId: sql`excluded."userId"`
+					}
+				})
+		})
+
 	}
 
 	async findByNumber(accountNumber: string): Promise<AccountEntity> {
@@ -60,6 +72,7 @@ export class AccountRepository {
 		const [response] = await this.db
 			.select({
 				id: accountSchema.id,
+				userId: accountSchema.userId,
 				version: accountSchema.version,
 				balance: accountSchema.balance,
 

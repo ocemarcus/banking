@@ -2,8 +2,8 @@ import { HttpException, HttpStatus } from "@nestjs/common";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AccountRepository } from "@repository/account.repository";
 import {
-    TransactionsOwnerEntity,
-    TransactionsRepository,
+	TransactionsOwnerEntity,
+	TransactionsRepository,
 } from "@repository/transactions.repository";
 import { generateId } from "@share/generate-id";
 import { CreateTransactionsCommand } from "../impl/create-transactions.command";
@@ -76,6 +76,7 @@ export class CreateTransactionsHandler
 
 		this.command.execute( new DailyStatsTransactionsCommand(
             data.amount,
+			account.userId!.toString(),
             account.id.toString(),
             account.id.toString(),
             transaction.typeTransaction)

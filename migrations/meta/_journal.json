@@ -3,74 +3,11 @@
   "dialect": "postgresql",
   "entries": [
     {
-      "idx": 0,
-      "version": "7",
-      "when": 1773096391584,
-      "tag": "0000_talented_frightful_four",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1773180554881,
-      "tag": "0001_ambitious_wolf_cub",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1773183954379,
-      "tag": "0002_flowery_oracle",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1773183973117,
-      "tag": "0003_pale_scarlet_spider",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1773184030105,
-      "tag": "0004_wakeful_unicorn",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1773184136628,
-      "tag": "0005_silly_shard",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1773184203034,
-      "tag": "0006_talented_stick",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1773184913494,
-      "tag": "0007_orange_warlock",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1773185574353,
-      "tag": "0008_organic_kat_farrell",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1773261656393,
-      "tag": "0009_heavy_karma",
-      "breakpoints": true
-    }
+					"idx": 23,
+					"version": "7",
+					"when": 1773347505955,
+					"tag": "0023_steep_jack_power",
+					"breakpoints": true
+				}
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "id": "8e461e00-9bd6-4b00-85d6-b6fe9749b012",
-  "prevId": "b381e93a-7b94-4653-802b-6915029c476d",
+  "id": "cdf3afbd-b0e4-437c-aeb0-20b5ea0d2958",
+  "prevId": "882bf239-3a19-4a7b-bc49-a2bfed2a0659",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -94,29 +94,32 @@
       "name": "accountSnapshot",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigint",
-          "primaryKey": true,
-          "notNull": true
-        },
         "balance": {
           "name": "balance",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "'0'"
         },
-        "version": {
-          "name": "version",
+        "totalIn": {
+          "name": "totalIn",
           "type": "numeric",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "'0'"
+        },
+        "totalOut": {
+          "name": "totalOut",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
         },
         "accountId": {
           "name": "accountId",
           "type": "bigint",
-          "primaryKey": false,
-          "notNull": false
+          "primaryKey": true,
+          "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
@@ -141,6 +144,74 @@
           "tableTo": "account",
           "columnsFrom": [
             "accountId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.accountUsersSnapshot": {
+      "name": "accountUsersSnapshot",
+      "schema": "",
+      "columns": {
+        "balance": {
+          "name": "balance",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "totalIn": {
+          "name": "totalIn",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "totalOut": {
+          "name": "totalOut",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "accountUsersSnapshot_userId_users_id_fk": {
+          "name": "accountUsersSnapshot_userId_users_id_fk",
+          "tableFrom": "accountUsersSnapshot",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
           ],
           "columnsTo": [
             "id"
@@ -201,6 +272,12 @@
           "notNull": false,
           "default": "'0'"
         },
+        "transactionDate": {
+          "name": "transactionDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
         "transactionCount": {
           "name": "transactionCount",
           "type": "numeric",
@@ -208,17 +285,11 @@
           "notNull": false,
           "default": "'0'"
         },
-        "transactionDate": {
-          "name": "transactionDate",
-          "type": "date",
-          "primaryKey": true,
-          "notNull": true
-        },
         "accountId": {
           "name": "accountId",
           "type": "bigint",
-          "primaryKey": true,
-          "notNull": true
+          "primaryKey": false,
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",
@@ -243,6 +314,209 @@
           "tableTo": "account",
           "columnsFrom": [
             "accountId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "transactionDailyStats_accountId_transactionDate_pk": {
+          "name": "transactionDailyStats_accountId_transactionDate_pk",
+          "columns": [
+            "accountId",
+            "transactionDate"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transactionDailyStatsUser": {
+      "name": "transactionDailyStatsUser",
+      "schema": "",
+      "columns": {
+        "pixIn": {
+          "name": "pixIn",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "pixOut": {
+          "name": "pixOut",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "bankSplitIn": {
+          "name": "bankSplitIn",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "bankSplitOut": {
+          "name": "bankSplitOut",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "transferInternalIn": {
+          "name": "transferInternalIn",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "transferInternalOut": {
+          "name": "transferInternalOut",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "transactionDate": {
+          "name": "transactionDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transactionCount": {
+          "name": "transactionCount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transactionDailyStatsUser_userId_users_id_fk": {
+          "name": "transactionDailyStatsUser_userId_users_id_fk",
+          "tableFrom": "transactionDailyStatsUser",
+          "tableTo": "users",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "transactionDailyStatsUser_userId_transactionDate_pk": {
+          "name": "transactionDailyStatsUser_userId_transactionDate_pk",
+          "columns": [
+            "userId",
+            "transactionDate"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ledgerEntries": {
+      "name": "ledgerEntries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accountId": {
+          "name": "accountId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entryType": {
+          "name": "entryType",
+          "type": "ledgerEntryType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transactionId": {
+          "name": "transactionId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ledgerEntries_accountId_account_id_fk": {
+          "name": "ledgerEntries_accountId_account_id_fk",
+          "tableFrom": "ledgerEntries",
+          "tableTo": "account",
+          "columnsFrom": [
+            "accountId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ledgerEntries_transactionId_transactions_id_fk": {
+          "name": "ledgerEntries_transactionId_transactions_id_fk",
+          "tableFrom": "ledgerEntries",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transactionId"
           ],
           "columnsTo": [
             "id"
@@ -528,6 +802,14 @@
       "values": [
         "pf",
         "pj"
+      ]
+    },
+    "public.ledgerEntryType": {
+      "name": "ledgerEntryType",
+      "schema": "public",
+      "values": [
+        "credit",
+        "debit"
       ]
     },
     "public.statusTransaction": {

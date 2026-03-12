@@ -1,6 +1,6 @@
 import type { DB } from "@db/db.client";
 import { InjectDb } from "@db/db.provider";
-import { transactionDailyStatsSchema } from "@db/schema/transactions.schema";
+import { transactionDailyStatsSchema } from "@db/schema/daily-stats.schema";
 import { Injectable } from "@nestjs/common";
 import { sql } from "drizzle-orm";
 import moment from "moment";
@@ -12,11 +12,14 @@ export class DailyStatsTransactionsRepository {
 
 	async dailyStats(data: {
 		amount: number
+		userId: string
 		typeTransaction: string
 		accountOriginId: string
 	}) {
+
 		const transactionDate = new Date()
 		await this.db.transaction(async (tx) => {
+
 			await tx
 				.insert(transactionDailyStatsSchema)
 				.values({
@@ -24,7 +27,6 @@ export class DailyStatsTransactionsRepository {
 					[data.typeTransaction]: data.amount,
 
 					transactionDate,
-					updatedAt: new Date(),
 					accountId: data.accountOriginId,
 				} as any)
 				.onConflictDoUpdate({
@@ -48,7 +50,8 @@ export class DailyStatsTransactionsRepository {
 
 
      async dailyStatsP2P(data: {
-         amount: number
+		 amount: number
+		 userId: string
          accountOriginId: string
          accountDestinationId: string
      }) {
@@ -58,13 +61,12 @@ export class DailyStatsTransactionsRepository {
         await this.db.transaction( async (tx) => {
 
         await tx
-				.insert(transactionDailyStatsSchema)
+			.insert(transactionDailyStatsSchema)
 				.values({
 					transactionCount: "1",
 					transferInternalIn: data.amount,
 
 					transactionDate,
-					updatedAt: new Date(),
 					accountId: data.accountDestinationId,
 				} as any)
 				.onConflictDoUpdate({

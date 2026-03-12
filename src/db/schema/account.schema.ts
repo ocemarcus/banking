@@ -17,7 +17,9 @@ export const accountSchema = pgTable("account", {
 
 	accountNumber: varchar().notNull().unique(),
 
-	balance: numeric().notNull(),
+	balance: numeric().notNull().default('0'),
+	pendingBalance: numeric().notNull().default('0'),
+
 	version: numeric().notNull(),
 
 	userId: bigint({ mode: "bigint" }).references(() => usersSchema.id),
@@ -36,12 +38,30 @@ export const accountSchema = pgTable("account", {
 
 
 export const accountSnapshotSchema = pgTable("accountSnapshot", {
-	id: bigint({ mode: "bigint" }).primaryKey(),
 
-	balance: numeric().notNull(),
-	version: numeric().notNull(),
+	balance: numeric().default('0'),
+	totalIn: numeric().default('0'),
+	totalOut: numeric().default('0'),
 
-	accountId: bigint({ mode: "bigint" }).references(() => accountSchema.id),
+	accountId: bigint({ mode: "bigint" }).references(() => accountSchema.id).primaryKey(),
+
+	createdAt: timestamp({
+		withTimezone: true,
+		mode: "string",
+	}).defaultNow(),
+
+	updatedAt: timestamp({
+		withTimezone: true,
+		mode: "string",
+	}).defaultNow(),
+});
+export const accountUsersSnapshotSchema = pgTable("accountUsersSnapshot", {
+
+	balance: numeric().default('0'),
+	totalIn: numeric().default('0'),
+	totalOut: numeric().default('0'),
+
+	userId: bigint({ mode: "bigint" }).references(() => usersSchema.id).primaryKey(),
 
 	createdAt: timestamp({
 		withTimezone: true,

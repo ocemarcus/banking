@@ -82,6 +82,7 @@ export class RollbackTransactionsHandler
 		this.command.execute(
 			new DailyStatsTransactionsCommand(
 				+transaction.amount,
+				command.usersId,
 				payload.accountOrigin.accountId.toString(),
 				payload.accountDestination.accountId.toString(),
 			),

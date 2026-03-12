@@ -3,7 +3,7 @@ import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { AccountRepository } from "@repository/account.repository";
 import { TransactionsRepository } from "@repository/transactions.repository";
 import { generateId } from "@share/generate-id";
-import { DailyStatsTransactionsCommand } from "../impl/daily-stats-transactions.command";
+import { P2PProcessTransactionCommand } from "../impl/p2p-proccess-transaction.command";
 import { P2PTransactionCommand } from "../impl/p2p-transaction.command";
 
 @CommandHandler(P2PTransactionCommand)
@@ -74,47 +74,26 @@ export class P2PTransactionsHandler
 		const creditId =
 			await this.transactionsRepository.findOwnerOrSave(creditOwner);
 
-		const transactions = [
-			{
-				id: await generateId(),
+		const transaction = {
+			id: await generateId(),
+			debitId,
+			creditId,
+			amount: command.amount,
+			statusTransaction: "pending",
 
-				accountId: account.id,
-				previousBalance: account.balance,
-				typeTransaction: "transferInternalOut",
-			},
-			{
-				id: await generateId(),
-				accountId: accountDestination.id,
-				previousBalance: accountDestination.balance,
-				typeTransaction: "transferInternalIn",
-			},
-		] as any;
-
-		const payload = {
-			transactions: transactions.map((item: any) => ({
-				...item,
-
-				debitId,
-				creditId,
-				amount: command.amount,
-				statusTransaction: "success",
-			})),
-			accountOrigin: {
-				accountId: account.id,
-				version: +account.version,
-			},
-			accountDestination: {
-				accountId: accountDestination.id,
-				version: +accountDestination.version,
-			},
+			accountId: account.id,
+			accountVersion: account.version,
+			previousBalance: account.balance,
+			typeTransaction: "transferInternalOut",
 		} as any;
-		await this.transactionsRepository.saveP2P(payload);
+		await this.transactionsRepository.saveP2P(transaction);
 
 		this.command.execute(
-			new DailyStatsTransactionsCommand(
-				command.amount,
-				account.id.toString(),
-				accountDestination.id.toString(),
+			new P2PProcessTransactionCommand(
+				command.userId,
+				transaction,
+				command.accountOriginId,
+				command.accountDestinationId,
 			),
 		);
 	}

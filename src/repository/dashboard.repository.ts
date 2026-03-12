@@ -1,9 +1,8 @@
 import type { DB } from "@db/db.client";
 import { InjectDb } from "@db/db.provider";
-import { accountSchema } from "@db/schema/account.schema";
-import { transactionDailyStatsSchema } from "@db/schema/transactions.schema";
+import { accountUsersSnapshotSchema } from "@db/schema/account.schema";
 import { Injectable } from "@nestjs/common";
-import { desc, eq, sum } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 
 
@@ -13,45 +12,11 @@ export class DashboardRepository {
 
     public async balance(userId: string) {
 
-        const [balance] =  await this.db.select({
-              id: accountSchema.id,
-              balance: sum(accountSchema.balance),
-        })
-        .from(accountSchema)
+        const [response] = await this.db.select()
+            .from(accountUsersSnapshotSchema)
         .where(
-            eq(accountSchema.userId, BigInt(userId))
+            eq(accountUsersSnapshotSchema.userId, BigInt(userId))
         )
-        .groupBy(accountSchema.id)
-
-
-        const [total] = await this.db.select()
-        .from(
-            transactionDailyStatsSchema
-        ).innerJoin(
-             accountSchema,
-             eq(accountSchema.id, transactionDailyStatsSchema.accountId)
-        )
-        .where(
-            eq(accountSchema.userId, BigInt(userId))
-        )
-            .orderBy(desc(transactionDailyStatsSchema.transactionCount))
-
-        if(!balance?.balance) {
-            return {
-                balance: 0,
-                totalIn: 0,
-                totalOut: 0,
-            }
-        }
-
-        return {
-             balance: +balance.balance,
-             totalIn: +total.transactionDailyStats.pixIn!
-             +  +total.transactionDailyStats.transferInternalIn!
-             +  +total.transactionDailyStats.bankSplitIn!,
-             totalOut: +total.transactionDailyStats.pixOut!
-             + +total.transactionDailyStats.transferInternalOut!
-             + +total.transactionDailyStats.bankSplitOut!,
-        }
+        return response
     }
 }

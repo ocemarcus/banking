@@ -3,6 +3,8 @@ import type { DB } from "@db/db.client";
 import { InjectDb } from "@db/db.provider";
 import {
 	accountSchema,
+	accountSnapshotSchema,
+	accountUsersSnapshotSchema
 } from "@db/schema/account.schema";
 import {
 	transactionsOwnerSchema,
@@ -97,14 +99,15 @@ export class TransactionsRepository {
 		};
 	}): Promise<void> {
 		await this.db.transaction(async (tx) => {
-			const accountBalance = /In/.test(data.transaction.typeTransaction)
-				? sql`${accountSchema.balance} + ${data.transaction.amount}`
-				: sql`${accountSchema.balance} - ${data.transaction.amount}`;
+
+			const isInOut = /In/.test(data.transaction.typeTransaction)
 
 			const [accountResponse] = await tx
 				.update(accountSchema)
 				.set({
-					balance: accountBalance,
+					balance: isInOut
+						? sql`balance + ${data.transaction.amount}`
+						: sql`balance - ${data.transaction.amount}`,
 					version: sql`${accountSchema.version} + 1`,
 				})
 				.where(
@@ -119,8 +122,31 @@ export class TransactionsRepository {
 				tx.rollback();
 			}
 
+			const balance = isInOut
+				? sql`balance + ${data.transaction.amount}`
+				: sql`balance - ${data.transaction.amount}`
+
+			const totalInOut = isInOut ? { totalIn: sql`"totalIn" + ${data.transaction.amount}` } : { totalOut: sql`"totalOut" + ${data.transaction.amount}` }
+
+			await tx.update(accountSnapshotSchema).set({
+				balance,
+				...totalInOut
+
+			} as any).where(
+				eq(accountSnapshotSchema.accountId, data.account.accountId)
+			)
+
+			await tx.update(accountUsersSnapshotSchema).set({
+				balance,
+				...totalInOut
+
+			} as any).where(
+				eq(accountUsersSnapshotSchema.userId, accountResponse.userId!)
+			)
 
 			data.transaction.nextBalance = accountResponse.balance;
+			data.transaction.accountVersion = accountResponse.version
+
 			await tx.insert(transactionsSchema).values(data.transaction);
 		});
 	}
@@ -176,30 +202,21 @@ export class TransactionsRepository {
 		}
 		return response.id.toString();
 	}
-	async saveP2P(data: {
-		transactions: CreateTransactionsEntity[];
-		accountOrigin: {
-			version: number;
-			accountId: bigint;
-		};
-		accountDestination: {
-			version: number;
-			accountId: bigint;
-		};
-	}): Promise<void> {
+	async saveP2P(transaction: CreateTransactionsEntity): Promise<void> {
 		await this.db.transaction(async (tx) => {
-			const [transaction] = data.transactions;
 
 			const [accountOrigin] = await tx
 				.update(accountSchema)
 				.set({
 					version: sql`${accountSchema.version} + 1`,
 					balance: sql`${accountSchema.balance} - ${transaction.amount}`,
+					pendingBalance: sql`${accountSchema.pendingBalance} + ${transaction.amount}`,
 				})
 				.where(
 					and(
-						eq(accountSchema.id, data.accountOrigin.accountId),
-						eq(accountSchema.version, data.accountOrigin.version.toString()),
+						eq(accountSchema.id, transaction.accountId!),
+						eq(accountSchema.version, transaction.accountVersion),
+						gte(accountSchema.balance, transaction.amount),
 					),
 				)
 				.returning();
@@ -207,31 +224,23 @@ export class TransactionsRepository {
 			if (!accountOrigin) {
 				tx.rollback();
 			}
-			const [accountDestination] = await tx
-				.update(accountSchema)
-				.set({
-					version: sql`${accountSchema.version} + 1`,
-					balance: sql`${accountSchema.balance} + ${transaction.amount}`,
-				})
-				.where(
-					and(
-						eq(accountSchema.id, data.accountDestination.accountId),
-						eq(
-							accountSchema.version,
-							data.accountDestination.version.toString(),
-						),
-					),
-				)
-				.returning();
 
-			if (!accountDestination) {
-				tx.rollback();
-			}
+			await tx.update(accountUsersSnapshotSchema).set({
+				totalOut: sql`"totalOut" + ${transaction.amount}`
+			} as any).where(
+				eq(accountUsersSnapshotSchema.userId, accountOrigin.userId!)
+			)
 
-			data.transactions[0].nextBalance = accountOrigin.balance
-			data.transactions[1].nextBalance = accountDestination.balance
+			await tx.update(accountSnapshotSchema).set({
+				totalOut: sql`"totalOut" + ${transaction.amount}`
+			} as any).where(
+				eq(accountSnapshotSchema.accountId, transaction.accountId!)
+			)
 
-			await tx.insert(transactionsSchema).values(data.transactions);
+			transaction.nextBalance = accountOrigin.balance
+			transaction.accountVersion = accountOrigin.version
+
+			await tx.insert(transactionsSchema).values(transaction);
 		});
 	}
 
