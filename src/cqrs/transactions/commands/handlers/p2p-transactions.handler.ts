@@ -86,7 +86,15 @@ export class P2PTransactionsHandler
 			previousBalance: account.balance,
 			typeTransaction: "transferInternalOut",
 		} as any;
-		await this.transactionsRepository.saveP2P(transaction);
+
+		const payload = {
+			transaction,
+			account: {
+				accountId: account.id,
+				version: +account.version,
+			},
+		};
+		await this.transactionsRepository.save(payload);
 
 		this.command.execute(
 			new P2PProcessTransactionCommand(

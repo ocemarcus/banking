@@ -6,6 +6,7 @@ import {
 	accountSnapshotSchema,
 	accountUsersSnapshotSchema
 } from "@db/schema/account.schema";
+import { ledgerEntriesSchema } from "@db/schema/ledger-entries.schema";
 import {
 	transactionsOwnerSchema,
 	transactionsSchema
@@ -100,11 +101,14 @@ export class TransactionsRepository {
 	}): Promise<void> {
 		await this.db.transaction(async (tx) => {
 
-			const isInOut = /In/.test(data.transaction.typeTransaction)
+			const isInOut = /InternalIn/.test(data.transaction.typeTransaction)
+
+			const pendingBalance = !isInOut ? { pendingBalance: sql`"pendingBalance" + ${data.transaction.amount}` } : {}
 
 			const [accountResponse] = await tx
 				.update(accountSchema)
 				.set({
+					...pendingBalance,
 					balance: isInOut
 						? sql`balance + ${data.transaction.amount}`
 						: sql`balance - ${data.transaction.amount}`,
@@ -144,10 +148,19 @@ export class TransactionsRepository {
 				eq(accountUsersSnapshotSchema.userId, accountResponse.userId!)
 			)
 
+
 			data.transaction.nextBalance = accountResponse.balance;
 			data.transaction.accountVersion = accountResponse.version
 
 			await tx.insert(transactionsSchema).values(data.transaction);
+
+			await tx.insert(ledgerEntriesSchema).values({
+				id: data.transaction.id,
+				amount: data.transaction.amount,
+				accountId: data.account.accountId,
+				transactionId: data.transaction.id,
+				entryType: isInOut ? 'credit' : 'debit',
+			})
 		});
 	}
 
@@ -201,47 +214,6 @@ export class TransactionsRepository {
 			return owner.id.toString();
 		}
 		return response.id.toString();
-	}
-	async saveP2P(transaction: CreateTransactionsEntity): Promise<void> {
-		await this.db.transaction(async (tx) => {
-
-			const [accountOrigin] = await tx
-				.update(accountSchema)
-				.set({
-					version: sql`${accountSchema.version} + 1`,
-					balance: sql`${accountSchema.balance} - ${transaction.amount}`,
-					pendingBalance: sql`${accountSchema.pendingBalance} + ${transaction.amount}`,
-				})
-				.where(
-					and(
-						eq(accountSchema.id, transaction.accountId!),
-						eq(accountSchema.version, transaction.accountVersion),
-						gte(accountSchema.balance, transaction.amount),
-					),
-				)
-				.returning();
-
-			if (!accountOrigin) {
-				tx.rollback();
-			}
-
-			await tx.update(accountUsersSnapshotSchema).set({
-				totalOut: sql`"totalOut" + ${transaction.amount}`
-			} as any).where(
-				eq(accountUsersSnapshotSchema.userId, accountOrigin.userId!)
-			)
-
-			await tx.update(accountSnapshotSchema).set({
-				totalOut: sql`"totalOut" + ${transaction.amount}`
-			} as any).where(
-				eq(accountSnapshotSchema.accountId, transaction.accountId!)
-			)
-
-			transaction.nextBalance = accountOrigin.balance
-			transaction.accountVersion = accountOrigin.version
-
-			await tx.insert(transactionsSchema).values(transaction);
-		});
 	}
 
 	public async rollback(data: {

@@ -63,6 +63,8 @@ export const transactionsSchema = pgTable("transactions", {
 
 	accountId: bigint({ mode: 'bigint' }).references(() => accountSchema.id),
 
+	originalTransactionId: bigint({ mode: 'bigint' }),
+
 
 	debitId: bigint({ mode: 'bigint' }).references(() => transactionsOwnerSchema.id),
 	creditId: bigint({ mode: 'bigint' }).references(() => transactionsOwnerSchema.id),

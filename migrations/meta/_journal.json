@@ -3,11 +3,18 @@
   "dialect": "postgresql",
   "entries": [
     {
-					"idx": 23,
-					"version": "7",
-					"when": 1773347505955,
-					"tag": "0023_steep_jack_power",
-					"breakpoints": true
-				}
+      "idx": 23,
+      "version": "7",
+      "when": 1773347505955,
+      "tag": "0023_steep_jack_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1773356820196,
+      "tag": "0024_cultured_blizzard",
+      "breakpoints": true
+    }
   ]
 }

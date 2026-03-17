@@ -34,10 +34,13 @@ export class P2PProcessTransactionsHandler
 				version: +account.version,
 			},
 		});
+
+		const userId = account.userId!.toString()
+
 		this.command.execute(
 			new DailyStatsTransactionsCommand(
-				command.transaction.amou,
-				account.userId!.toString(),
+				command.transaction.amount,
+				userId,
 				command.accountOriginId,
 				command.accountDestinationId,
 			),

@@ -3,12 +3,14 @@ import {
 	CreditCard,
 	LayoutDashboard,
 	Settings,
+	ShoppingCart,
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { createAccount, getAccount } from "../../api/account";
 import { getTransactions } from "../../api/transactions";
 import { Button } from "../../components/ui/button";
 import { AccountPage } from "../accounts/AccountPage";
+import { SalesPage } from "../sales/SalesPage";
 import { TransactionsPage } from "../transactions/TransactionsPage";
 import { OverviewPage } from "./OverviewPage";
 
@@ -30,6 +32,16 @@ export function DashboardLayout({ user, onLogout }) {
 		startDate: "",
 		endDate: "",
 		typeTransaction: "",
+	});
+	const [sales, setSales] = useState([]);
+	const [salesPage, setSalesPage] = useState(1);
+	const [salesTotal, setSalesTotal] = useState(0);
+	const [loadingSales, setLoadingSales] = useState(false);
+	const [errorSales, setErrorSales] = useState("");
+	const [salesFilters, setSalesFilters] = useState({
+		startDate: "",
+		endDate: "",
+		paymentMethod: "",
 	});
 
 	const initialTransactions = [
@@ -168,6 +180,88 @@ export function DashboardLayout({ user, onLogout }) {
 			.finally(() => setLoadingTransactions(false));
 	}, [activePage, transactionsPage, transactionsFilters]);
 
+	React.useEffect(() => {
+		if (activePage !== "sales") return;
+
+		setLoadingSales(true);
+		setErrorSales("");
+
+		// Simulando dados de vendas - futuramente integrar com API
+		const mockSales = [
+			{
+				id: "SALE-001",
+				date: "2026-03-14",
+				paymentMethod: "pix",
+				brand: "PIX",
+				description: "Venda - Produto A",
+				amount: 150.00,
+			},
+			{
+				id: "SALE-002",
+				date: "2026-03-13",
+				paymentMethod: "credit",
+				brand: "Visa",
+				description: "Venda - Produto B",
+				amount: 320.50,
+			},
+			{
+				id: "SALE-003",
+				date: "2026-03-13",
+				paymentMethod: "debit",
+				brand: "Mastercard",
+				description: "Venda - Produto C",
+				amount: 89.90,
+			},
+			{
+				id: "SALE-004",
+				date: "2026-03-12",
+				paymentMethod: "pix",
+				brand: "PIX",
+				description: "Venda - Produto D",
+				amount: 450.00,
+			},
+			{
+				id: "SALE-005",
+				date: "2026-03-12",
+				paymentMethod: "credit",
+				brand: "Elo",
+				description: "Venda - Produto E",
+				amount: 200.00,
+			},
+		];
+
+		setTimeout(() => {
+			// Aplicar filtros
+			let filtered = [...mockSales];
+			
+			if (salesFilters.paymentMethod) {
+				filtered = filtered.filter(
+					(sale) => sale.paymentMethod === salesFilters.paymentMethod
+				);
+			}
+
+			if (salesFilters.startDate) {
+				const startDate = new Date(salesFilters.startDate);
+				filtered = filtered.filter(
+					(sale) => new Date(sale.date) >= startDate
+				);
+			}
+
+			if (salesFilters.endDate) {
+				const endDate = new Date(salesFilters.endDate);
+				endDate.setHours(23, 59, 59, 999);
+				filtered = filtered.filter(
+					(sale) => new Date(sale.date) <= endDate
+				);
+			}
+
+			setSales(filtered);
+			setSalesTotal(filtered.length);
+			setSalesPage(1);
+			setLoadingSales(false);
+		}, 500);
+	}, [activePage, salesPage, salesFilters]);
+
 	async function handleCreateAccount(event) {
 		event.preventDefault();
 		if (!accountForm.document) return;
@@ -252,6 +346,31 @@ export function DashboardLayout({ user, onLogout }) {
 				</>
 			);
 		}
+		if (activePage === "sales") {
+			return <SalesPage />;
+		}
+		if (activePage === "sales") {
+			return (
+				<>
+					{loadingSales && <div className="p-4">Carregando vendas...</div>}
+					<SalesPage
+						sales={sales}
+						page={salesPage}
+						total={salesTotal}
+						loading={loadingSales}
+						error={errorSales}
+						filters={salesFilters}
+						onFiltersChange={(key, value) => {
+							setSalesPage(1);
+							setSalesFilters((prev) => ({ ...prev, [key]: value }));
+						}}
+						onPageChange={(nextPage) => {
+							setSalesPage(nextPage);
+						}}
+					/>
+				</>
+			);
+		}
 		if (activePage === "settings") {
 			return (
 				<section className="space-y-4">
@@ -298,6 +417,18 @@ export function DashboardLayout({ user, onLogout }) {
 					>
 						<CreditCard size={16} />
 						<span>Accounts</span>
+					</button>
+					<button
+						type="button"
+						className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left font-medium transition ${
+							activePage === "sales"
+								? "bg-orange-500/10 text-orange-600"
+								: "text-slate-600 hover:bg-slate-100"
+						}`}
+						onClick={() => setActivePage("sales")}
+					>
+						<ShoppingCart size={16} />
+						<span>Vendas</span>
 					</button>
 					<button
 						type="button"
