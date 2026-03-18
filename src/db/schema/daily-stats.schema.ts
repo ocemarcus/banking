@@ -7,7 +7,7 @@ import {
 	timestamp,
 } from "drizzle-orm/pg-core";
 import { accountSchema } from "./account.schema";
-import { usersSchema } from "./users.schema";
+import { tenantSchema } from "./tenant.schema";
 
 const columns = {
 	pixIn: numeric().default("0"),
@@ -26,8 +26,9 @@ export const transactionDailyStatsSchema = pgTable(
 	{
 		...columns,
 
-		accountId: bigint({ mode: "bigint" })
-			.references(() => accountSchema.id),
+		accountId: bigint({ mode: "bigint" }).references(() => accountSchema.id),
+
+		tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id),
 
 		createdAt: timestamp({
 			withTimezone: true,
@@ -48,8 +49,7 @@ export const transactionDailyStatsUserSchema = pgTable(
 	{
 		...columns,
 
-		userId: bigint({ mode: "bigint" })
-			.references(() => usersSchema.id),
+		tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id),
 
 		createdAt: timestamp({
 			withTimezone: true,
@@ -61,7 +61,5 @@ export const transactionDailyStatsUserSchema = pgTable(
 			mode: "string",
 		}).defaultNow(),
 	},
-	(table) => [
-		primaryKey({columns: [table.userId, table.transactionDate]})
-	]
+	(table) => [primaryKey({ columns: [table.tenantId, table.transactionDate] })],
 );

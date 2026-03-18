@@ -1,7 +1,7 @@
 import { AccountsDto } from "@controller/account/dto/accounts.dto";
 import type { DB } from "@db/db.client";
 import { InjectDb } from "@db/db.provider";
-import { accountSchema, accountSnapshotSchema, accountUsersSnapshotSchema } from "@db/schema/account.schema";
+import { accountSchema, accountSnapshotSchema, accountTenantSnapshotSchema } from "@db/schema/account.schema";
 import { usersSchema } from "@db/schema/users.schema";
 import { AccountEntity } from "@entity/account.entity";
 import { Injectable } from "@nestjs/common";
@@ -37,9 +37,9 @@ export class AccountRepository {
 
 			await tx.insert(accountSchema).values(data as any);
 			await tx.insert(accountSnapshotSchema).values({ accountId: data.id } as any)
-			await tx.insert(accountUsersSnapshotSchema).values({ userId: data.userId } as any)
+			await tx.insert(accountTenantSnapshotSchema).values({ userId: data.userId } as any)
 				.onConflictDoUpdate({
-					target: [accountUsersSnapshotSchema.userId], set: {
+					target: [accountTenantSnapshotSchema.userId], set: {
 						userId: sql`excluded."userId"`
 					}
 				})

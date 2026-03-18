@@ -1,7 +1,13 @@
-import { bigint, numeric, pgEnum, pgTable, timestamp } from "drizzle-orm/pg-core";
+import {
+	bigint,
+	numeric,
+	pgEnum,
+	pgTable,
+	timestamp,
+} from "drizzle-orm/pg-core";
 import { accountSchema } from "./account.schema";
+import { tenantSchema } from "./tenant.schema";
 import { transactionsSchema } from "./transactions.schema";
-
 
 export const ledgerEntryTypeEnum = pgEnum("ledgerEntryType", [
 	"credit",
@@ -13,13 +19,15 @@ export const ledgerEntriesSchema = pgTable("ledgerEntries", {
 
 	amount: numeric().notNull(),
 
-	accountId: bigint({ mode: "bigint" })
-		.references(() => accountSchema.id),
+	tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id),
 
-    entryType: ledgerEntryTypeEnum().notNull(),
+	accountId: bigint({ mode: "bigint" }).references(() => accountSchema.id),
 
-	transactionId: bigint({ mode: "bigint" })
-		.references(() => transactionsSchema.id),
+	entryType: ledgerEntryTypeEnum().notNull(),
+
+	transactionId: bigint({ mode: "bigint" }).references(
+		() => transactionsSchema.id,
+	),
 
 	createdAt: timestamp({
 		withTimezone: true,

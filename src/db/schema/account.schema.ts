@@ -4,9 +4,9 @@ import {
 	pgEnum,
 	pgTable,
 	timestamp,
-	varchar
+	varchar,
 } from "drizzle-orm/pg-core";
-import { usersSchema } from "./users.schema";
+import { tenantSchema } from "./tenant.schema";
 
 export const accountTypeEnum = pgEnum("accountType", ["pf", "pj"]);
 
@@ -17,12 +17,12 @@ export const accountSchema = pgTable("account", {
 
 	accountNumber: varchar().notNull().unique(),
 
-	balance: numeric().notNull().default('0'),
-	pendingBalance: numeric().notNull().default('0'),
+	balance: numeric().notNull().default("0"),
+	pendingBalance: numeric().notNull().default("0"),
 
 	version: numeric().notNull(),
 
-	userId: bigint({ mode: "bigint" }).references(() => usersSchema.id),
+	tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id),
 
 	createdAt: timestamp({
 		withTimezone: true,
@@ -34,34 +34,18 @@ export const accountSchema = pgTable("account", {
 		mode: "string",
 	}).defaultNow(),
 });
-
-
 
 export const accountSnapshotSchema = pgTable("accountSnapshot", {
 
-	balance: numeric().default('0'),
-	totalIn: numeric().default('0'),
-	totalOut: numeric().default('0'),
+	balance: numeric().default("0"),
+	totalIn: numeric().default("0"),
+	totalOut: numeric().default("0"),
 
-	accountId: bigint({ mode: "bigint" }).references(() => accountSchema.id).primaryKey(),
+	accountId: bigint({ mode: "bigint" })
+		.references(() => accountSchema.id)
+		.primaryKey(),
 
-	createdAt: timestamp({
-		withTimezone: true,
-		mode: "string",
-	}).defaultNow(),
-
-	updatedAt: timestamp({
-		withTimezone: true,
-		mode: "string",
-	}).defaultNow(),
-});
-export const accountUsersSnapshotSchema = pgTable("accountUsersSnapshot", {
-
-	balance: numeric().default('0'),
-	totalIn: numeric().default('0'),
-	totalOut: numeric().default('0'),
-
-	userId: bigint({ mode: "bigint" }).references(() => usersSchema.id).primaryKey(),
+	tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id),
 
 	createdAt: timestamp({
 		withTimezone: true,
@@ -73,5 +57,21 @@ export const accountUsersSnapshotSchema = pgTable("accountUsersSnapshot", {
 		mode: "string",
 	}).defaultNow(),
 });
+export const accountTenantSnapshotSchema = pgTable("accountTenantSnapshot", {
 
+	balance: numeric().default("0"),
+	totalIn: numeric().default("0"),
+	totalOut: numeric().default("0"),
 
+	tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id).primaryKey(),
+
+	createdAt: timestamp({
+		withTimezone: true,
+		mode: "string",
+	}).defaultNow(),
+
+	updatedAt: timestamp({
+		withTimezone: true,
+		mode: "string",
+	}).defaultNow(),
+});

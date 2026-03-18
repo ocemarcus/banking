@@ -4,7 +4,7 @@ import { InjectDb } from "@db/db.provider";
 import {
 	accountSchema,
 	accountSnapshotSchema,
-	accountUsersSnapshotSchema
+	accountTenantSnapshotSchema
 } from "@db/schema/account.schema";
 import { ledgerEntriesSchema } from "@db/schema/ledger-entries.schema";
 import {
@@ -140,12 +140,12 @@ export class TransactionsRepository {
 				eq(accountSnapshotSchema.accountId, data.account.accountId)
 			)
 
-			await tx.update(accountUsersSnapshotSchema).set({
+			await tx.update(accountTenantSnapshotSchema).set({
 				balance,
 				...totalInOut
 
 			} as any).where(
-				eq(accountUsersSnapshotSchema.userId, accountResponse.userId!)
+				eq(accountTenantSnapshotSchema.userId, accountResponse.userId!)
 			)
 
 

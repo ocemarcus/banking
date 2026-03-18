@@ -7,6 +7,7 @@ import {
 	varchar
 } from "drizzle-orm/pg-core";
 import { accountSchema } from "./account.schema";
+import { tenantSchema } from "./tenant.schema";
 
 export const typeTransactionEnum = pgEnum("typeTransaction", [
 	"pixIn",
@@ -61,6 +62,7 @@ export const transactionsSchema = pgTable("transactions", {
 
 	accountVersion: numeric().notNull(),
 
+	tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id),
 	accountId: bigint({ mode: 'bigint' }).references(() => accountSchema.id),
 
 	originalTransactionId: bigint({ mode: 'bigint' }),
