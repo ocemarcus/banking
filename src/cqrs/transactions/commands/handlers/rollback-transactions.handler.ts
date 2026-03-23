@@ -19,7 +19,7 @@ export class RollbackTransactionsHandler
 	public async execute(command: RollbackTransactionsCommand) {
 		const transaction = await this.transactionsRepository.findRollbackDetail(
 			command.transactionId,
-			command.usersId,
+			command.tenantId,
 		);
 
 		if (!transaction?.typeTransaction) {
@@ -82,7 +82,7 @@ export class RollbackTransactionsHandler
 		this.command.execute(
 			new DailyStatsTransactionsCommand(
 				+transaction.amount,
-				command.usersId,
+				command.tenantId,
 				payload.accountOrigin.accountId.toString(),
 				payload.accountDestination.accountId.toString(),
 			),

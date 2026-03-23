@@ -28,9 +28,9 @@ export class TransactionsController {
 	@ApiResponse(SwaggerError400)
 	@ApiResponse(SwaggerError401)
 	async create(@Query() params: TransactionsDto, @Request() req: any) {
-		const userId = req.user.sub;
+		const tenantId = req.user.sub;
 		return await this.query.execute(
-			new TransactionsQueryCommand(userId, params),
+			new TransactionsQueryCommand(tenantId, params),
 		);
 	}
 }

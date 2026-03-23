@@ -18,7 +18,7 @@ export class P2PTransactionsHandler
 
 	public async execute(command: P2PTransactionCommand) {
 		const account = await this.accountRepository.findByAccountDetail({
-			userId: command.userId,
+			tenantId: command.tenantId,
 			id: command.accountOriginId,
 		});
 
@@ -98,7 +98,7 @@ export class P2PTransactionsHandler
 
 		this.command.execute(
 			new P2PProcessTransactionCommand(
-				command.userId,
+				command.tenantId,
 				transaction,
 				command.accountOriginId,
 				command.accountDestinationId,

@@ -1,0 +1,1 @@
+ALTER TABLE "tenant" RENAME COLUMN "name" TO "fullName";

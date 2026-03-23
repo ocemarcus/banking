@@ -9,12 +9,12 @@ import { plainToInstance } from "class-transformer";
 export class CreateAccountService {
 	constructor(private readonly accountRepository: AccountRepository) {}
 
-	public async execute(data: CreateAccountDto, userId: string) {
+	public async execute(data: CreateAccountDto, tenantId: string) {
 		const id = await generateId();
 
 		const account = plainToInstance(AccountEntity, {
 			id,
-			userId,
+			tenantId,
 			balance: 0,
 			version: 1,
 			accountNumber: data.document,

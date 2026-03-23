@@ -60,6 +60,7 @@ export class CreateTransactionsHandler
 
 			debitId,
 			accountId: account.id,
+			tenantId: account.tenantId,
 
 			previousBalance: account.balance,
 		} as any;
@@ -76,7 +77,7 @@ export class CreateTransactionsHandler
 
 		this.command.execute( new DailyStatsTransactionsCommand(
             data.amount,
-			account.userId!.toString(),
+			account.tenantId!.toString(),
             account.id.toString(),
             account.id.toString(),
             transaction.typeTransaction)

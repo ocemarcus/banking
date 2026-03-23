@@ -11,6 +11,6 @@ export class TransactionsHandler
 	) {}
 
 	public async execute(command: TransactionsQueryCommand) {
-        return await this.transactionsRepository.find(command.params, command.userId)
+		return await this.transactionsRepository.find(command.params, command.tenantId)
     }
 }

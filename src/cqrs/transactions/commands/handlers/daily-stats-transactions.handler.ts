@@ -15,7 +15,7 @@ export class DailyStatsTransactionsHandler
 
 			await this.dailyStatsTransactionsRepository.dailyStats({
 				amount: command.amount,
-				userId: command.userId,
+				tenantId: command.tenantId,
 				accountOriginId: command.accountOriginId,
 				typeTransaction: command.typeTransaction,
 			})

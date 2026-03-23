@@ -10,12 +10,12 @@ import { eq } from "drizzle-orm";
 export class DashboardRepository {
      constructor(@InjectDb() private readonly db: DB) {}
 
-    public async balance(userId: string) {
+    public async balance(tenantId: string) {
 
         const [response] = await this.db.select()
             .from(accountTenantSnapshotSchema)
         .where(
-            eq(accountTenantSnapshotSchema.userId, BigInt(userId))
+            eq(accountTenantSnapshotSchema.tenantId, BigInt(tenantId))
         )
         return response
     }

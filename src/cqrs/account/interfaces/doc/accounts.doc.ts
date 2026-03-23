@@ -1,8 +1,8 @@
-import { createSwaggerProperties, createSwaggerPropertiesEnum, SwaggerHttpResponse, swaggerType } from "@share/swagger";
+import { createSwaggerProperties, createSwaggerPropertiesEnum, SwaggerPaginationResponse, swaggerType } from "@share/swagger";
 
 
 export const AccountSwaggerProperties = {
-    id: createSwaggerProperties(swaggerType.string, 'Id da transação', 'uuid'),
+    id: createSwaggerProperties(swaggerType.string, 'Id da transação', '6942348337294773741'),
     balance: createSwaggerProperties(
         swaggerType.number,
         'Saldo em conta. Valor em centavos',
@@ -18,7 +18,6 @@ export const AccountSwaggerProperties = {
 
     createdAt: createSwaggerProperties(swaggerType.string, 'Data de criação', '2026-02-23 13:02:33.79405+00'),
     updatedAt: createSwaggerProperties(swaggerType.string, 'Data de atualização', '2026-02-23 13:02:33.79405+00'),
-    
 }
 
-export const AccountSwaggerResponse = SwaggerHttpResponse(AccountSwaggerProperties,'Listar contas')
+export const AccountSwaggerResponse = SwaggerPaginationResponse(AccountSwaggerProperties, 'Listar contas')

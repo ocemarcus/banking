@@ -26,7 +26,7 @@ export class P2PTransactionsController {
 	@ApiResponse(SwaggerError400)
 	@ApiResponse(SwaggerError401)
 	async create(@Body() data: P2PTransactionsDto, @Request() req: any) {
-		const userId = req.user.sub
-		return await this.command.execute(new P2PTransactionCommand(userId, data.amount, data.accountOriginId, data.accountDestinationId))
+		const tenantId = req.user.sub
+		return await this.command.execute(new P2PTransactionCommand(tenantId, data.amount, data.accountOriginId, data.accountDestinationId))
 	}
 }

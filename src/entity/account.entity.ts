@@ -4,7 +4,7 @@ export class AccountEntity {
 
    id: string
 
-   userId: string
+   tenantId: string
    
    accountType: string
    accountNumber: string

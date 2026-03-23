@@ -22,7 +22,7 @@ export const accountSchema = pgTable("account", {
 
 	version: numeric().notNull(),
 
-	tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id),
+	tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id).notNull(),
 
 	createdAt: timestamp({
 		withTimezone: true,

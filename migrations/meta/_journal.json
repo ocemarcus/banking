@@ -3,17 +3,17 @@
   "dialect": "postgresql",
   "entries": [
     {
-      "idx": 23,
+      "idx": 0,
       "version": "7",
-      "when": 1773347505955,
-      "tag": "0023_steep_jack_power",
+      "when": 1773858633186,
+      "tag": "0000_swift_iron_fist",
       "breakpoints": true
     },
     {
-      "idx": 24,
+      "idx": 1,
       "version": "7",
-      "when": 1773356820196,
-      "tag": "0024_cultured_blizzard",
+      "when": 1774277169984,
+      "tag": "0001_free_gambit",
       "breakpoints": true
     }
   ]

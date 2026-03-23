@@ -12,7 +12,7 @@ export class DailyStatsTransactionsRepository {
 
 	async dailyStats(data: {
 		amount: number
-		userId: string
+		tenantId: string
 		typeTransaction: string
 		accountOriginId: string
 	}) {
@@ -51,7 +51,7 @@ export class DailyStatsTransactionsRepository {
 
      async dailyStatsP2P(data: {
 		 amount: number
-		 userId: string
+		 tenantId: string
          accountOriginId: string
          accountDestinationId: string
      }) {

@@ -1,6 +1,6 @@
 {
-  "id": "2647d363-31e6-4634-9ad5-9e9483a919f4",
-  "prevId": "94101ec4-2a27-45e7-804f-38c10aeb4474",
+  "id": "43412a23-03c7-4e49-b24d-1e49197cb1f8",
+  "prevId": "1096abb1-aee0-42bb-b96d-2932f6bdd27d",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -47,11 +47,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "userId": {
-          "name": "userId",
+        "tenantId": {
+          "name": "tenantId",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
@@ -70,12 +70,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "account_userId_users_id_fk": {
-          "name": "account_userId_users_id_fk",
+        "account_tenantId_tenant_id_fk": {
+          "name": "account_tenantId_tenant_id_fk",
           "tableFrom": "account",
-          "tableTo": "users",
+          "tableTo": "tenant",
           "columnsFrom": [
-            "userId"
+            "tenantId"
           ],
           "columnsTo": [
             "id"
@@ -129,6 +129,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp with time zone",
@@ -158,6 +164,19 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "accountSnapshot_tenantId_tenant_id_fk": {
+          "name": "accountSnapshot_tenantId_tenant_id_fk",
+          "tableFrom": "accountSnapshot",
+          "tableTo": "tenant",
+          "columnsFrom": [
+            "tenantId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -166,8 +185,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.accountUsersSnapshot": {
-      "name": "accountUsersSnapshot",
+    "public.accountTenantSnapshot": {
+      "name": "accountTenantSnapshot",
       "schema": "",
       "columns": {
         "balance": {
@@ -191,8 +210,8 @@
           "notNull": false,
           "default": "'0'"
         },
-        "userId": {
-          "name": "userId",
+        "tenantId": {
+          "name": "tenantId",
           "type": "bigint",
           "primaryKey": true,
           "notNull": true
@@ -214,12 +233,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "accountUsersSnapshot_userId_users_id_fk": {
-          "name": "accountUsersSnapshot_userId_users_id_fk",
-          "tableFrom": "accountUsersSnapshot",
-          "tableTo": "users",
+        "accountTenantSnapshot_tenantId_tenant_id_fk": {
+          "name": "accountTenantSnapshot_tenantId_tenant_id_fk",
+          "tableFrom": "accountTenantSnapshot",
+          "tableTo": "tenant",
           "columnsFrom": [
-            "userId"
+            "tenantId"
           ],
           "columnsTo": [
             "id"
@@ -299,6 +318,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp with time zone",
@@ -322,6 +347,19 @@
           "tableTo": "account",
           "columnsFrom": [
             "accountId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactionDailyStats_tenantId_tenant_id_fk": {
+          "name": "transactionDailyStats_tenantId_tenant_id_fk",
+          "tableFrom": "transactionDailyStats",
+          "tableTo": "tenant",
+          "columnsFrom": [
+            "tenantId"
           ],
           "columnsTo": [
             "id"
@@ -403,8 +441,8 @@
           "notNull": false,
           "default": "'0'"
         },
-        "userId": {
-          "name": "userId",
+        "tenantId": {
+          "name": "tenantId",
           "type": "bigint",
           "primaryKey": false,
           "notNull": false
@@ -426,12 +464,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "transactionDailyStatsUser_userId_users_id_fk": {
-          "name": "transactionDailyStatsUser_userId_users_id_fk",
+        "transactionDailyStatsUser_tenantId_tenant_id_fk": {
+          "name": "transactionDailyStatsUser_tenantId_tenant_id_fk",
           "tableFrom": "transactionDailyStatsUser",
-          "tableTo": "users",
+          "tableTo": "tenant",
           "columnsFrom": [
-            "userId"
+            "tenantId"
           ],
           "columnsTo": [
             "id"
@@ -441,10 +479,10 @@
         }
       },
       "compositePrimaryKeys": {
-        "transactionDailyStatsUser_userId_transactionDate_pk": {
-          "name": "transactionDailyStatsUser_userId_transactionDate_pk",
+        "transactionDailyStatsUser_tenantId_transactionDate_pk": {
+          "name": "transactionDailyStatsUser_tenantId_transactionDate_pk",
           "columns": [
-            "userId",
+            "tenantId",
             "transactionDate"
           ]
         }
@@ -469,6 +507,12 @@
           "type": "numeric",
           "primaryKey": false,
           "notNull": true
+        },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
         },
         "accountId": {
           "name": "accountId",
@@ -506,6 +550,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "ledgerEntries_tenantId_tenant_id_fk": {
+          "name": "ledgerEntries_tenantId_tenant_id_fk",
+          "tableFrom": "ledgerEntries",
+          "tableTo": "tenant",
+          "columnsFrom": [
+            "tenantId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "ledgerEntries_accountId_account_id_fk": {
           "name": "ledgerEntries_accountId_account_id_fk",
           "tableFrom": "ledgerEntries",
@@ -533,6 +590,454 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.salesCardDetails": {
+      "name": "salesCardDetails",
+      "schema": "",
+      "columns": {
+        "salesId": {
+          "name": "salesId",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "cardNumber": {
+          "name": "cardNumber",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "salesCardDetails_salesId_sales_id_fk": {
+          "name": "salesCardDetails_salesId_sales_id_fk",
+          "tableFrom": "salesCardDetails",
+          "tableTo": "sales",
+          "columnsFrom": [
+            "salesId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.salesDailyStats": {
+      "name": "salesDailyStats",
+      "schema": "",
+      "columns": {
+        "accountId": {
+          "name": "accountId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salesDate": {
+          "name": "salesDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salesType": {
+          "name": "salesType",
+          "type": "salesType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "salesDailyStats_accountId_account_id_fk": {
+          "name": "salesDailyStats_accountId_account_id_fk",
+          "tableFrom": "salesDailyStats",
+          "tableTo": "account",
+          "columnsFrom": [
+            "accountId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "salesDailyStats_tenantId_tenant_id_fk": {
+          "name": "salesDailyStats_tenantId_tenant_id_fk",
+          "tableFrom": "salesDailyStats",
+          "tableTo": "tenant",
+          "columnsFrom": [
+            "tenantId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "salesDailyStats_accountId_salesDate_pk": {
+          "name": "salesDailyStats_accountId_salesDate_pk",
+          "columns": [
+            "accountId",
+            "salesDate"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.salesMonthStats": {
+      "name": "salesMonthStats",
+      "schema": "",
+      "columns": {
+        "accountId": {
+          "name": "accountId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "year": {
+          "name": "year",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "month": {
+          "name": "month",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salesType": {
+          "name": "salesType",
+          "type": "salesType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "salesMonthStats_accountId_account_id_fk": {
+          "name": "salesMonthStats_accountId_account_id_fk",
+          "tableFrom": "salesMonthStats",
+          "tableTo": "account",
+          "columnsFrom": [
+            "accountId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "salesMonthStats_tenantId_tenant_id_fk": {
+          "name": "salesMonthStats_tenantId_tenant_id_fk",
+          "tableFrom": "salesMonthStats",
+          "tableTo": "tenant",
+          "columnsFrom": [
+            "tenantId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "salesMonthStats_tenantId_year_month_pk": {
+          "name": "salesMonthStats_tenantId_year_month_pk",
+          "columns": [
+            "tenantId",
+            "year",
+            "month"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.salesPixDetails": {
+      "name": "salesPixDetails",
+      "schema": "",
+      "columns": {
+        "salesId": {
+          "name": "salesId",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "pixKey": {
+          "name": "pixKey",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "salesPixDetails_salesId_sales_id_fk": {
+          "name": "salesPixDetails_salesId_sales_id_fk",
+          "tableFrom": "salesPixDetails",
+          "tableTo": "sales",
+          "columnsFrom": [
+            "salesId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sales": {
+      "name": "sales",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "accountId": {
+          "name": "accountId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salesType": {
+          "name": "salesType",
+          "type": "salesType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salesStatus": {
+          "name": "salesStatus",
+          "type": "salesStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sales_accountId_account_id_fk": {
+          "name": "sales_accountId_account_id_fk",
+          "tableFrom": "sales",
+          "tableTo": "account",
+          "columnsFrom": [
+            "accountId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sales_tenantId_tenant_id_fk": {
+          "name": "sales_tenantId_tenant_id_fk",
+          "tableFrom": "sales",
+          "tableTo": "tenant",
+          "columnsFrom": [
+            "tenantId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tenant": {
+      "name": "tenant",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "fullName": {
+          "name": "fullName",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "document": {
+          "name": "document",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cellPhone": {
+          "name": "cellPhone",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tenantType": {
+          "name": "tenantType",
+          "type": "tenantStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'analysis'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -656,6 +1161,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
         "accountId": {
           "name": "accountId",
           "type": "bigint",
@@ -697,6 +1208,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "transactions_tenantId_tenant_id_fk": {
+          "name": "transactions_tenantId_tenant_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "tenant",
+          "columnsFrom": [
+            "tenantId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "transactions_accountId_account_id_fk": {
           "name": "transactions_accountId_account_id_fk",
           "tableFrom": "transactions",
@@ -783,6 +1307,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "tenantId": {
+          "name": "tenantId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp with time zone",
@@ -799,7 +1329,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_tenantId_tenant_id_fk": {
+          "name": "users_tenantId_tenant_id_fk",
+          "tableFrom": "users",
+          "tableTo": "tenant",
+          "columnsFrom": [
+            "tenantId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "users_email_unique": {
@@ -830,6 +1374,32 @@
       "values": [
         "credit",
         "debit"
+      ]
+    },
+    "public.salesStatus": {
+      "name": "salesStatus",
+      "schema": "public",
+      "values": [
+        "success",
+        "pending",
+        "error"
+      ]
+    },
+    "public.salesType": {
+      "name": "salesType",
+      "schema": "public",
+      "values": [
+        "pix",
+        "card"
+      ]
+    },
+    "public.tenantStatus": {
+      "name": "tenantStatus",
+      "schema": "public",
+      "values": [
+        "analysis",
+        "active",
+        "disabled"
       ]
     },
     "public.statusTransaction": {

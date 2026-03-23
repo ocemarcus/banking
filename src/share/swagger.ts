@@ -53,9 +53,24 @@ export const createSwaggerParameters = (
 		required: type === swaggerType.path ? true : (options?.required ?? false),
 	};
 };
-export const SwaggerHttpResponse = (properties: any, description: string) => {
+export const SwaggerResponse = (properties: any, description: string) => {
 	return {
-		description, 
+		description,
+		status: HttpStatus.OK,
+		content: {
+			'application/json': {
+				schema: {
+					properties,
+					type: swaggerType.object,
+				}
+			}
+		}
+	};
+};
+
+export const SwaggerPaginationResponse = (properties: any, description: string) => {
+	return {
+		description,
 		status: HttpStatus.OK,
 		content: {
 				'application/json': {

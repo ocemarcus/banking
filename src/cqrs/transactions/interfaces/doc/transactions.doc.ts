@@ -1,4 +1,4 @@
-import { createSwaggerProperties, SwaggerHttpResponse, swaggerType } from "@share/swagger"
+import { createSwaggerProperties, SwaggerPaginationResponse, swaggerType } from "@share/swagger"
 
 
 export const TransactionsOwnerProperties = {
@@ -29,7 +29,7 @@ export const TransactionsSwaggerProperties = {
     updatedAt: createSwaggerProperties(swaggerType.string, 'Data de atualização', '2026-02-23 13:02:33.79405+00'),
 }
 
-export const TransactionsSwaggerResponse = SwaggerHttpResponse(
+export const TransactionsSwaggerResponse = SwaggerPaginationResponse(
     TransactionsSwaggerProperties,
     'Listar transações da conta'
 )

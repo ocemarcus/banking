@@ -3,7 +3,7 @@ import { TransactionsDto } from "@cqrs/transactions/interfaces/dto/transactions.
 
 export class TransactionsQueryCommand {
     constructor(
-        public userId: string,
+        public tenantId: string,
         public params: TransactionsDto
     ) {}
 }

@@ -13,13 +13,11 @@ import { and, count, eq, sql } from "drizzle-orm";
 export class AccountRepository {
 	constructor(@InjectDb() private readonly db: DB) {}
 
-	async find(params: AccountsDto, userId: string) {
+	async find(params: AccountsDto, tenantId: string) {
 		const where = AccountRepository.search(params)
 
-		console.log(userId)
-
 		where.push(
-			eq(accountSchema.userId, userId as any)
+			eq(accountSchema.tenantId, tenantId as any)
 		)
 
 		const [data, total] = await Promise.all([
@@ -37,10 +35,10 @@ export class AccountRepository {
 
 			await tx.insert(accountSchema).values(data as any);
 			await tx.insert(accountSnapshotSchema).values({ accountId: data.id } as any)
-			await tx.insert(accountTenantSnapshotSchema).values({ userId: data.userId } as any)
+			await tx.insert(accountTenantSnapshotSchema).values({ tenantId: data.tenantId } as any)
 				.onConflictDoUpdate({
-					target: [accountTenantSnapshotSchema.userId], set: {
-						userId: sql`excluded."userId"`
+					target: [accountTenantSnapshotSchema.tenantId], set: {
+						tenantId: sql`excluded."tenantId"`
 					}
 				})
 		})
@@ -72,7 +70,7 @@ export class AccountRepository {
 		const [response] = await this.db
 			.select({
 				id: accountSchema.id,
-				userId: accountSchema.userId,
+				tenantId: accountSchema.tenantId,
 				version: accountSchema.version,
 				balance: accountSchema.balance,
 
@@ -85,7 +83,7 @@ export class AccountRepository {
 				}
 			})
 			.from(accountSchema)
-			.innerJoin(usersSchema, eq(usersSchema.id, accountSchema.userId))
+			.innerJoin(usersSchema, eq(usersSchema.id, accountSchema.tenantId))
 			.where(and(...where));
 
 		return response

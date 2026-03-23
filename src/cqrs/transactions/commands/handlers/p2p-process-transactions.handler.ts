@@ -35,12 +35,12 @@ export class P2PProcessTransactionsHandler
 			},
 		});
 
-		const userId = account.userId!.toString()
+		const tenantId = account.tenantId!.toString()
 
 		this.command.execute(
 			new DailyStatsTransactionsCommand(
 				command.transaction.amount,
-				userId,
+				tenantId,
 				command.accountOriginId,
 				command.accountDestinationId,
 			),

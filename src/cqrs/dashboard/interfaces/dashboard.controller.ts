@@ -17,7 +17,7 @@ export class DashboardController {
 		description: "Listar informações do saldo",
 	})
 	async create(@Query() params: DashboardDto, @Req() req: any) {
-		const userId = req.user.sub;
-		return await this.command.execute(new DashboardQueryBus(userId));
+		const tenantId = req.user.sub;
+		return await this.command.execute(new DashboardQueryBus(tenantId));
 	}
 }

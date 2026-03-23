@@ -21,7 +21,7 @@ export class RollbackTransactionsController {
 	@ApiResponse(SwaggerError400)
 	@ApiResponse(SwaggerError401)
 	async create(@Param('id') transactionId: string, @Request() req: any) {
-		const userId = req.user.sub
-		return await this.command.execute(new RollbackTransactionsCommand(transactionId, userId ))
+		const tenantId = req.user.sub
+		return await this.command.execute(new RollbackTransactionsCommand(transactionId, tenantId))
 	}
 }

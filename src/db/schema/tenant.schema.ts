@@ -11,7 +11,7 @@ export const tenantStatusEnum = pgEnum("tenantStatus", [
 export const tenantSchema = pgTable("tenant", {
 	id: bigint({ mode: 'bigint' }).primaryKey(),
 
-    name: varchar(),
+	fullName: varchar(),
     document: varchar(),
 
     email: varchar(),

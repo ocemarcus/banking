@@ -24,13 +24,13 @@ export type TransactionsOwnerEntity =
 export class TransactionsRepository {
 	constructor(@InjectDb() private readonly db: DB) {}
 
-	async find(params: TransactionsDto, userId: string) {
+	async find(params: TransactionsDto, tenantId: string) {
 		const debit = alias(transactionsOwnerSchema, "debit");
 		const credit = alias(transactionsOwnerSchema, "credit");
 
 		const where = TransactionsRepository.search(params);
 
-		where.push(eq(accountSchema.userId, BigInt(userId)));
+		where.push(eq(transactionsSchema.tenantId, BigInt(tenantId)));
 
 		const [data, total] = await Promise.all([
 			this.db
@@ -66,12 +66,9 @@ export class TransactionsRepository {
 					},
 				})
 				.from(transactionsSchema)
-				.innerJoin(
-					accountSchema,
-					eq(accountSchema.id, transactionsSchema.accountId),
-				)
 				.leftJoin(debit, eq(debit.id, transactionsSchema.debitId))
 				.leftJoin(credit, eq(credit.id, transactionsSchema.creditId))
+				.innerJoin(accountSchema, eq(accountSchema.id, transactionsSchema.accountId))
 				.where(and(...where))
 				.limit(+params.limit)
 				.offset(+params.page)
@@ -80,12 +77,9 @@ export class TransactionsRepository {
 			this.db
 				.select({ total: count(transactionsSchema.id) })
 				.from(transactionsSchema)
-				.innerJoin(
-					accountSchema,
-					eq(accountSchema.id, transactionsSchema.accountId),
-				)
 				.leftJoin(debit, eq(debit.id, transactionsSchema.debitId))
 				.leftJoin(credit, eq(credit.id, transactionsSchema.creditId))
+				.innerJoin(accountSchema, eq(accountSchema.id, transactionsSchema.accountId))
 				.where(and(...where)),
 		]);
 
@@ -101,7 +95,7 @@ export class TransactionsRepository {
 	}): Promise<void> {
 		await this.db.transaction(async (tx) => {
 
-			const isInOut = /InternalIn/.test(data.transaction.typeTransaction)
+			const isInOut = ['transferInternalIn', 'pixIn', 'bankSlipIn'].includes(data.transaction.typeTransaction)
 
 			const pendingBalance = !isInOut ? { pendingBalance: sql`"pendingBalance" + ${data.transaction.amount}` } : {}
 
@@ -145,7 +139,7 @@ export class TransactionsRepository {
 				...totalInOut
 
 			} as any).where(
-				eq(accountTenantSnapshotSchema.userId, accountResponse.userId!)
+				eq(accountTenantSnapshotSchema.tenantId, accountResponse.tenantId!)
 			)
 
 
@@ -159,12 +153,13 @@ export class TransactionsRepository {
 				amount: data.transaction.amount,
 				accountId: data.account.accountId,
 				transactionId: data.transaction.id,
+				tenantId: data.transaction.tenantId,
 				entryType: isInOut ? 'credit' : 'debit',
 			})
 		});
 	}
 
-	async findRollbackDetail(transactionId: string, userId: string) {
+	async findRollbackDetail(transactionId: string, tenantId: string) {
 		const [response] = await this.db
 			.select({
 				amount: transactionsSchema.amount,
@@ -196,7 +191,7 @@ export class TransactionsRepository {
 			)
 			.where(
 				and(
-					eq(accountSchema.userId, BigInt(userId)),
+					eq(accountSchema.tenantId, BigInt(tenantId)),
 					eq(transactionsSchema.id, BigInt(transactionId)),
 				),
 			);

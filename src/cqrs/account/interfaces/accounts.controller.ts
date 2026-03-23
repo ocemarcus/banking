@@ -28,7 +28,7 @@ export class AccountsController {
 	@ApiResponse(SwaggerError400)
 	@ApiResponse(SwaggerError401)
 	async create(@Query() params: AccountsDto, @Request() req: any) {
-		const userId = req.user.sub;
-		return await this.query.execute(new AccountQueryCommand(userId, params));
+		const tenantId = req.user.sub;
+		return await this.query.execute(new AccountQueryCommand(tenantId, params));
 	}
 }

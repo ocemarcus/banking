@@ -3,7 +3,7 @@
 export class DailyStatsTransactionsCommand {
     constructor(
         public amount: number,
-        public userId: string,
+        public tenantId: string,
         public accountOriginId: string,
         public accountDestinationId: string,
         public typeTransaction?: string,
