@@ -1,12 +1,13 @@
 import {
+	bigint,
 	numeric,
 	pgEnum,
 	pgTable,
 	timestamp,
-	uuid,
-	varchar,
+	varchar
 } from "drizzle-orm/pg-core";
 import { accountSchema } from "./account.schema";
+import { tenantSchema } from "./tenant.schema";
 
 export const typeTransactionEnum = pgEnum("typeTransaction", [
 	"pixIn",
@@ -25,7 +26,7 @@ export const statusTransactionEnum = pgEnum("statusTransaction", [
 
 export const transactionsOwnerSchema = pgTable('transactionOwner', {
 
-	id: uuid().primaryKey(),
+	id: bigint({ mode: 'bigint' }).primaryKey(),
 
     fullName: varchar().notNull(),
     document: varchar().notNull(),
@@ -46,24 +47,29 @@ export const transactionsOwnerSchema = pgTable('transactionOwner', {
 })
 
 export const transactionsSchema = pgTable("transactions", {
-	id: uuid().primaryKey(),
+	id: bigint({ mode: 'bigint' }).primaryKey(),
 
 	amount: numeric().notNull(),
 
     typeTransaction: typeTransactionEnum().notNull(),
 
 	statusTransaction: statusTransactionEnum().notNull(),
- 
+
 	description: varchar(),
 
 	nextBalance: numeric().notNull(),
 	previousBalance: numeric().notNull(),
 
-    accountId: uuid().references(() => accountSchema.id),
+	accountVersion: numeric().notNull(),
+
+	tenantId: bigint({ mode: "bigint" }).references(() => tenantSchema.id),
+	accountId: bigint({ mode: 'bigint' }).references(() => accountSchema.id),
+
+	originalTransactionId: bigint({ mode: 'bigint' }),
 
 
-	debitId: uuid().references(() => transactionsOwnerSchema.id),
-	creditId: uuid().references(() => transactionsOwnerSchema.id),
+	debitId: bigint({ mode: 'bigint' }).references(() => transactionsOwnerSchema.id),
+	creditId: bigint({ mode: 'bigint' }).references(() => transactionsOwnerSchema.id),
 
 	createdAt: timestamp({
 		withTimezone: true,
@@ -75,3 +81,4 @@ export const transactionsSchema = pgTable("transactions", {
 		mode: "string",
 	}).defaultNow(),
 });
+

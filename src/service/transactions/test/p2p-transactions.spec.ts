@@ -17,7 +17,7 @@ describe("P2PTransactionsService", () => {
 
 	const payload = {
 		amount: 1000,
-		accountFromId: "019c8a95-43e4-7797-88e6-67f00573ea54",
+		accountDestinationId: "019c8a95-43e4-7797-88e6-67f00573ea54",
 		accountId: "019c8a95-43e4-7797-88e6-67f00573ea54",
 	};
 	it("Validar conta não existente", async () => {

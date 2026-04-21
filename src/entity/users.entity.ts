@@ -3,7 +3,11 @@
 export class UsersEntity {
     id: string
 
+    tenantId: string
+
     email: string
+
+    role: 'admin' | `member`
 
     fullName: string
     cellPhone: string

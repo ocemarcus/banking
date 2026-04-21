@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Nubank-inspired palette (clean, modern, light background) */
+  --background: 262 60% 98%; /* very light lavender / off-white */
+  --foreground: 230 12% 12%; /* dark slate for text */
+  --card: 0 0% 100%; /* white cards */
+  --card-foreground: 230 12% 12%;
+  --primary: 277 95% 40%; /* nubank purple */
+  --primary-foreground: 0 0% 100%; /* white text on primary */
+  --secondary: 262 50% 94%;
+  --secondary-foreground: 230 12% 12%;
+  --muted: 262 50% 94%;
+  --muted-foreground: 230 8% 46%;
+  --accent: 280 80% 92%;
+  --accent-foreground: 230 12% 12%;
+  --border: 230 16% 88%;
+  --input: 230 16% 96%;
+  --ring: 277 95% 40%;
+  --radius: 0.8rem;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground font-sans antialiased;
+  margin: 0;
+}

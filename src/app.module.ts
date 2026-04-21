@@ -1,18 +1,26 @@
+import { AccountModule } from "@cqrs/account/account.module";
+import { DashboardModule } from "@cqrs/dashboard/dashboard.module";
+import { SalesModule } from "@cqrs/sales/sales.module";
+import { TenantModule } from "@cqrs/tenant/tenant.module";
+import { TransactionsModule } from "@cqrs/transactions/transactions.module";
+import { UsersModule } from "@cqrs/users/users.module";
+import { WebHookModule } from "@cqrs/webhook/webhook.modulo";
 import { DbModule } from "@db/db.module";
+import { AuthModule } from "@module/auth.module";
 import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { LoggerMiddleware } from "./middleware/logger.middleware";
-import { AccountModule } from "./modules/account.module";
-import { AuthModule } from "./modules/auth.module";
-import { TransactionsModule } from "./modules/transactions.module";
-import { UsersModule } from "./modules/users.module";
 
 @Module({
 	imports: [
 		DbModule,
-		UsersModule,
+		TenantModule,
 		AuthModule,
+		UsersModule,
 		AccountModule,
 		TransactionsModule,
+		DashboardModule,
+		WebHookModule,
+		SalesModule,
 	],
 	controllers: [],
 	providers: [],

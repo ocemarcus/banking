@@ -5,36 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1771618395831,
-      "tag": "0000_groovy_starjammers",
+      "when": 1773858633186,
+      "tag": "0000_swift_iron_fist",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1771624126798,
-      "tag": "0001_thick_exiles",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1771629754860,
-      "tag": "0002_furry_venus",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1771805978161,
-      "tag": "0003_long_whiplash",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1771817967022,
-      "tag": "0004_cuddly_gladiator",
+      "when": 1774277169984,
+      "tag": "0001_free_gambit",
       "breakpoints": true
     }
   ]

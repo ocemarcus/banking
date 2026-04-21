@@ -1,11 +1,15 @@
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { BigIntInterceptor } from "./interceptor/big-int.Interceptor";
 import { ValidationPipe } from "./pipe/validate.pipe";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+  });
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new BigIntInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle("Banking AC")
